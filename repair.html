@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<!-- {{@liquid}} section: r360-hub.liquid · template: page.r360-hub.json
+     Variabili Liquid: {{ shop.name }} · {{ shop.metafields.repair360.tenant_id.value }}
+     Assets: {{ 'repair360.css' | asset_url }} · {{ 'repair360-app.js' | asset_url }}
+-->
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="Repair360 — Il sistema operativo per laboratori di riparazione. Coda digitale, gestionale, WhatsApp AI, signage TV. Usato da MrPhone ogni giorno."/>
+<title>Repair360 · RiparaSubito.tech — Il sistema che i laboratori aspettavano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────────────────────────────────
+   REPAIR360 HUB · Liquid section stylesheet
+   Copy as: assets/repair360.css in Shopify theme
+   ───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,system-ui,sans-serif;background:#fff;color:#0F172A;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+::selection{background:#FECACA}
+
+/* ── TOKENS ── */
+:root{
+  --r:#DC2626;--rd:#B91C1C;--rl:#FEF2F2;--rg:rgba(220,38,38,.15);
+  --ink:#0F172A;--soft:#334155;--mu:#64748B;--fa:#94A3B8;
+  --line:#E8ECF2;--warm:#FFFBF5;
+}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:70;height:64px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);padding:0 clamp(16px,4vw,44px);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:var(--r);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--rg);transition:transform .2s}
+.logo:hover .logo-icon{transform:rotate(-5deg) scale(1.08)}
+.logo-word{font-weight:900;font-size:17px;letter-spacing:-.025em;color:var(--ink)}
+.logo-word span{color:var(--r)}
+.logo-tag{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);padding:3px 9px;background:#F1F5F9;border-radius:100px;margin-left:2px}
+.nav-r{display:flex;gap:8px;align-items:center}
+.nb{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;text-decoration:none}
+.nb-g{background:transparent;color:var(--mu)}.nb-g:hover{background:#F1F5F9;color:var(--ink)}
+.nb-o{background:#fff;color:var(--ink);border:1.5px solid var(--line)}.nb-o:hover{border-color:#CBD5E1}
+.nb-r{background:var(--r);color:#fff;box-shadow:0 6px 20px var(--rg)}.nb-r:hover{background:var(--rd)}
+@media(max-width:680px){.nav-r .hide{display:none}}
+
+/* ── HERO ── */
+.hero{max-width:1240px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px) clamp(40px,5vw,60px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,80px);align-items:center}
+@media(max-width:860px){.hero{grid-template-columns:1fr;}.dev-col{display:none}}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--r);margin-bottom:20px}
+.badge-pulse{width:8px;height:8px;border-radius:50%;background:#10B981;animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}60%{box-shadow:0 0 0 9px rgba(16,185,129,0)}}
+.hero h1{font-size:clamp(40px,5.5vw,68px);font-weight:900;letter-spacing:-.048em;line-height:1.02;color:var(--ink);margin-bottom:18px}
+.hero h1 em{font-style:normal;color:var(--r)}
+.hero-sub{font-size:clamp(16px,2vw,18px);color:var(--mu);font-weight:500;line-height:1.68;max-width:490px;margin-bottom:28px}
+/* usp list */
+.usp{display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
+.usp-row{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:var(--soft)}
+.usp-row svg{flex-shrink:0}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.cta{display:inline-flex;align-items:center;gap:9px;padding:0 30px;height:58px;border-radius:17px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;border:none;transition:all .18s;text-decoration:none;letter-spacing:-.01em}
+.cta-r{background:var(--r);color:#fff;box-shadow:0 14px 36px var(--rg)}.cta-r:hover{background:var(--rd);transform:translateY(-2px)}
+.cta-o{background:#fff;color:var(--ink);border:2px solid var(--line)}.cta-o:hover{border-color:#CBD5E1;background:#F8FAFC}
+/* stats bar */
+.stats{display:flex;gap:clamp(20px,4vw,44px);flex-wrap:wrap;margin-top:44px;padding-top:36px;border-top:1px solid var(--line)}
+.stat-v{font-size:30px;font-weight:900;letter-spacing:-.04em;color:var(--ink);line-height:1}
+.stat-l{font-size:12px;color:var(--mu);font-weight:600;margin-top:5px}
+
+/* ── FLOATING DEVICES ── */
+.dev-col{position:relative;height:480px;display:flex;align-items:center;justify-content:center}
+@keyframes floatA{0%,100%{transform:rotate(5deg) translateY(0)}50%{transform:rotate(5deg) translateY(-20px)}}
+@keyframes floatB{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(-4deg) translateY(-16px)}}
+@keyframes floatC{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.dev{position:absolute;cursor:pointer;border-radius:36px;overflow:hidden;transition:filter .2s;will-change:transform}
+.dev:hover{filter:brightness(1.04)}
+/* IPHONE */
+.dev-ph{width:164px;height:340px;border-radius:36px;background:#1C1C1E;border:7px solid #2D2D2F;box-shadow:0 0 0 1px #111,0 32px 64px rgba(15,23,42,.32);right:20px;top:10px;animation:floatA 4s ease-in-out infinite}
+.ph-island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:72px;height:21px;background:#000;border-radius:12px;z-index:5}
+.ph-screen{position:absolute;inset:0;border-radius:28px;overflow:hidden;background:#fff}
+/* IPAD */
+.dev-ipad{width:230px;height:316px;border-radius:18px;background:#1C1C1E;border:5px solid #2D2D2F;box-shadow:0 0 0 1px #111,0 28px 56px rgba(15,23,42,.28);left:0;top:60px;animation:floatB 5s ease-in-out infinite .7s}
+.ipad-cam{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:#333;z-index:5}
+.ipad-scr{position:absolute;top:24px;bottom:22px;left:6px;right:6px;border-radius:10px;overflow:hidden;background:#F8FAFC}
+.ipad-home{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:70px;height:3px;border-radius:2px;background:rgba(255,255,255,.2)}
+/* MAC MINI */
+.dev-mac{left:60px;bottom:-20px;animation:floatC 3.8s ease-in-out infinite 1.3s;position:absolute}
+.mac-frame{width:280px;background:#1C1C1E;border-radius:10px 10px 0 0;border:5px solid #2D2D2F;overflow:hidden;box-shadow:0 0 0 1px #111,0 24px 60px rgba(15,23,42,.35)}
+.mac-bar{background:#2A2A2C;height:24px;display:flex;align-items:center;gap:6px;padding:0 10px;flex-shrink:0}
+.mac-bar i{width:10px;height:10px;border-radius:50%;display:block}
+.mac-body{background:#F8FAFC;height:160px;padding:6px;overflow:hidden;display:flex;flex-direction:column;gap:4px}
+.mac-base{width:320px;height:12px;background:linear-gradient(to bottom,#C0C0C0,#A8A8A8);border-radius:0 0 3px 3px}
+.mac-foot{width:340px;height:7px;background:#888;border-radius:0 0 6px 6px}
+
+/* SCREEN CONTENT (inside devices) */
+.ph-inner{background:#fff;height:100%;overflow:hidden;display:flex;flex-direction:column}
+.ph-nav{background:var(--r);padding:8px 12px;display:flex;align-items:center;gap:6px}
+.ph-logo{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center}
+.ph-title{font-weight:900;font-size:10px;color:#fff}
+.ph-body{padding:10px;flex:1;background:#fff}
+.ph-greeting{font-size:13px;font-weight:900;color:var(--ink);margin-bottom:4px}
+.ph-sub{font-size:8px;color:var(--mu);font-weight:600;margin-bottom:10px}
+.ph-ticket{background:var(--ink);border-radius:10px;padding:8px}
+.ph-tc{font-size:8.5px;font-weight:900;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.ph-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.12)}.ph-fill{height:100%;width:65%;background:var(--r);border-radius:2px}
+.ph-cta{margin-top:8px;background:var(--r);border-radius:8px;padding:8px;text-align:center;font-size:8.5px;font-weight:900;color:#fff}
+
+/* ── HOW IT WORKS ── */
+.how{background:var(--warm);padding:clamp(48px,7vw,88px) clamp(20px,5vw,48px)}
+.how-inner{max-width:1100px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0;margin-top:40px;position:relative}
+.step{padding:32px 28px;position:relative}
+.step:not(:last-child)::after{content:'→';position:absolute;right:-14px;top:40px;font-size:22px;font-weight:900;color:var(--line);z-index:2}
+@media(max-width:760px){.step::after{display:none}}
+.step-num{width:44px;height:44px;border-radius:13px;background:var(--r);color:#fff;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 6px 18px var(--rg)}
+.step h4{font-size:17px;font-weight:900;margin-bottom:8px;letter-spacing:-.015em;color:var(--ink)}
+.step p{font-size:13.5px;color:var(--mu);font-weight:500;line-height:1.6}
+.step-api{font-size:10.5px;font-family:ui-monospace,monospace;color:var(--fa);background:#F1F5F9;padding:3px 8px;border-radius:5px;display:inline-block;margin-top:8px}
+
+/* ── MODULE CARDS ── */
+.mods{max-width:1100px;margin:0 auto;padding:clamp(48px,7vw,88px) clamp(20px,5vw,48px)}
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:32px}
+.mod{background:#fff;border:1.5px solid var(--line);border-radius:22px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;text-decoration:none;color:inherit}
+.mod:hover{transform:translateY(-5px);box-shadow:0 22px 60px rgba(15,23,42,.1);border-color:#CBD5E1}
+.mod-visual{height:166px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;position:relative;overflow:hidden;border-bottom:1.5px solid var(--line)}
+.mod-tag{position:absolute;top:12px;left:12px;font-size:10px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;border-radius:100px}
+.tl{background:rgba(16,185,129,.1);color:#15803D;border:1px solid rgba(16,185,129,.22)}
+.td{background:rgba(220,38,38,.1);color:var(--r);border:1px solid rgba(220,38,38,.18)}
+.to{background:rgba(15,23,42,.07);color:var(--ink);border:1px solid rgba(15,23,42,.1)}
+.mod-icon{font-size:52px;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.1))}
+.mod-kpi{font-size:11px;font-weight:800;color:var(--mu);letter-spacing:.05em}
+.mod-body{padding:20px 22px;flex:1;display:flex;flex-direction:column}
+.mod-body h3{font-size:17px;font-weight:900;letter-spacing:-.015em;margin-bottom:7px;color:var(--ink)}
+.mod-body p{font-size:13.5px;color:var(--mu);font-weight:500;line-height:1.55;flex:1}
+.mod-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.mod-open{font-size:13px;font-weight:800;color:var(--r);display:inline-flex;align-items:center;gap:4px}
+.mod-file{font-size:11px;color:var(--fa);font-weight:600;font-family:ui-monospace,monospace}
+
+/* ── PARTNER PITCH (dark) ── */
+.pitch-wrap{padding:0 clamp(20px,5vw,48px) clamp(48px,7vw,88px)}
+.pitch{max-width:1100px;margin:0 auto;background:var(--ink);border-radius:32px;padding:clamp(36px,5vw,64px);position:relative;overflow:hidden}
+.pitch-glow1{position:absolute;top:-20%;right:-8%;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(220,38,38,.24),transparent 65%);pointer-events:none}
+.pitch-glow2{position:absolute;bottom:-30%;left:-5%;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(234,88,12,.12),transparent 65%);pointer-events:none}
+.pitch-top{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:flex-start;margin-bottom:36px;position:relative}
+@media(max-width:680px){.pitch-top{grid-template-columns:1fr}}
+.pitch-eye{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px}
+.pitch h2{font-size:clamp(30px,4.5vw,50px);font-weight:900;letter-spacing:-.045em;line-height:1.04;color:#fff;margin-bottom:12px}
+.pitch h2 em{font-style:normal;color:#FCA5A5}
+.pitch>p,.pitch-top>div>p{font-size:16px;color:rgba(255,255,255,.55);font-weight:500;line-height:1.65;max-width:480px}
+/* Pricing anchor */
+.price-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:22px 24px;min-width:200px;flex-shrink:0;position:relative}
+.price-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--r);color:#fff;font-size:10px;font-weight:900;padding:3px 12px;border-radius:100px;white-space:nowrap}
+.price-name{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:8px;margin-top:6px}
+.price-val{font-size:40px;font-weight:900;letter-spacing:-.04em;color:#fff;line-height:1}
+.price-old{font-size:14px;color:rgba(255,255,255,.3);text-decoration:line-through;font-weight:600;margin-left:6px}
+.price-period{font-size:12px;color:rgba(255,255,255,.4);font-weight:600;margin-top:3px}
+.price-note{font-size:11.5px;color:#4ADE80;font-weight:700;margin-top:8px;display:flex;align-items:center;gap:5px}
+/* scenario cards */
+.scenarios{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;position:relative;margin-bottom:32px}
+.sc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:22px;transition:background .15s}
+.sc:hover{background:rgba(255,255,255,.08)}
+.sc-ico{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
+.sc h4{font-size:16px;font-weight:900;color:#fff;margin-bottom:7px;line-height:1.2}
+.sc p{font-size:13px;color:rgba(255,255,255,.5);font-weight:500;line-height:1.6;margin-bottom:12px}
+.sc-pill{font-size:11px;font-weight:800;padding:4px 10px;border-radius:100px;display:inline-block}
+.pitch-cta{display:flex;gap:12px;flex-wrap:wrap;position:relative}
+.pc-r{display:inline-flex;align-items:center;gap:9px;padding:0 30px;height:56px;border-radius:16px;background:var(--r);color:#fff;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;border:none;box-shadow:0 12px 32px rgba(220,38,38,.4);transition:all .18s;text-decoration:none}
+.pc-r:hover{background:var(--rd);transform:translateY(-2px)}
+.pc-g{display:inline-flex;align-items:center;gap:9px;padding:0 26px;height:56px;border-radius:16px;background:rgba(255,255,255,.1);color:#fff;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;border:1.5px solid rgba(255,255,255,.18);transition:all .18s;text-decoration:none}
+.pc-g:hover{background:rgba(255,255,255,.18)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--line);padding:36px clamp(20px,5vw,48px);text-align:center}
+.ft-note{font-size:12.5px;color:var(--fa);font-weight:500;line-height:1.8;max-width:640px;margin:12px auto 0}
+
+/* ── DEVICE OVERLAYS ── */
+.ov{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.82);backdrop-filter:blur(18px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .32s ease}
+.ov.open{opacity:1;pointer-events:auto}
+.ov-x{position:fixed;top:18px;right:18px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.22);cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.ov-x:hover{background:rgba(255,255,255,.22)}
+.ov-lbl{font-size:10.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:18px;text-align:center}
+/* mac full */
+.ov-mac-lid{width:min(880px,92vw);height:min(520px,52vw);background:#1C1C1E;border-radius:14px 14px 0 0;border:6px solid #2D2D2F;overflow:hidden;box-shadow:0 0 0 1px #111,0 40px 100px rgba(0,0,0,.7)}
+.ov-mac-bar{background:#2A2A2C;height:26px;display:flex;align-items:center;gap:7px;padding:0 12px;flex-shrink:0}
+.ov-mac-bar i{width:11px;height:11px;border-radius:50%;display:block}
+.ov-mac-scr{height:calc(100% - 26px);overflow:hidden}.ov-mac-scr iframe{width:100%;height:100%;border:none}
+.ov-mac-base{width:min(960px,100vw);height:14px;background:linear-gradient(to bottom,#C0C0C0,#A8A8A8);border-radius:0 0 4px 4px}
+.ov-mac-foot{width:min(1020px,107vw);height:8px;background:#888;border-radius:0 0 8px 8px}
+/* ipad full */
+.ov-ipad{width:min(540px,76vw);height:min(720px,82vh);background:#1C1C1E;border-radius:22px;border:6px solid #2D2D2F;overflow:hidden;box-shadow:0 0 0 1px #111,0 30px 80px rgba(0,0,0,.7);position:relative}
+.ov-ipad-cam{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:#333;z-index:10}
+.ov-ipad-scr{position:absolute;top:26px;bottom:26px;left:8px;right:8px;border-radius:12px;overflow:hidden;background:#fff}
+.ov-ipad-scr iframe{width:100%;height:100%;border:none}
+.ov-ipad-home{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:80px;height:3.5px;border-radius:2px;background:rgba(255,255,255,.2)}
+/* iphone full */
+.ov-iph{width:min(300px,70vw);height:min(610px,82vh);background:#1C1C1E;border-radius:44px;border:7px solid #2D2D2F;position:relative;overflow:hidden;box-shadow:0 0 0 1px #111,0 30px 80px rgba(0,0,0,.7)}
+.ov-iph-isl{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:82px;height:22px;background:#000;border-radius:12px;z-index:10}
+.ov-iph-scr{position:absolute;inset:0;border-radius:37px;overflow:hidden;background:#fff}
+.ov-iph-scr iframe{width:100%;height:100%;border:none}
+.ov-iph-bar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:90px;height:4px;border-radius:2px;background:rgba(255,255,255,.2)}
+/* ov helpers */
+.ov-btns{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAV · Liquid: {{ shop.name }} · {{ 'repair360' | link_to: pages.hub }} -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+    </div>
+    <span class="logo-word">RiparaSubito<span>.tech</span></span>
+    <span class="logo-tag">Repair360</span>
+  </a>
+  <div class="nav-r">
+    <a href="#come-funziona" class="nb nb-g hide">Come funziona</a>
+    <a href="#scenari" class="nb nb-g hide">Per chi è</a>
+    <a href="demo.html" class="nb nb-o hide">▶ Demo</a>
+    <a href="partner.html" class="nb nb-r">Diventa partner</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <!-- TEXT -->
+  <div>
+    <div class="hero-badge"><span class="badge-pulse"></span>Usato da MrPhone ogni giorno · Live da marzo 2025</div>
+    <h1>Il negozio che<br><em>non si ferma mai.</em></h1>
+    <p class="hero-sub">Coda digitale. Gestionale. WhatsApp AI. Signage TV. Tutto connesso. Tutto automatico. Il cliente non telefona più, tu non perdi un ticket.</p>
+    <ul class="usp">
+      <li class="usp-row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Giorgia risponde su WhatsApp alle 3 di notte</li>
+      <li class="usp-row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Il cliente vede "2 persone davanti a te" in tempo reale</li>
+      <li class="usp-row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Zero carta, zero code infinite, zero mal di testa</li>
+    </ul>
+    <div class="hero-cta">
+      <a class="cta cta-r" href="demo.html">▶ Demo in 90 secondi</a>
+      <a class="cta cta-o" href="partner.html">Attiva gratis · 14 giorni →</a>
+    </div>
+    <div class="stats">
+      <div><div class="stat-v">3.815</div><div class="stat-l">Clienti nel CRM</div></div>
+      <div><div class="stat-v">47.737</div><div class="stat-l">Righe listino prezzi</div></div>
+      <div><div class="stat-v">28 min</div><div class="stat-l">Riparazione media</div></div>
+      <div><div class="stat-v">14 gg</div><div class="stat-l">Gratis per iniziare</div></div>
+    </div>
+  </div>
+
+  <!-- FLOATING DEVICES -->
+  <div class="dev-col">
+    <!-- iPhone (top right, floats A) -->
+    <div class="dev dev-ph" onclick="openOv('iphone')">
+      <div class="ph-island"></div>
+      <div class="ph-screen">
+        <div class="ph-inner">
+          <div class="ph-nav">
+            <div class="ph-logo"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2.5"/></svg></div>
+            <span class="ph-title">MrPhone</span>
+            <span style="margin-left:auto;font-size:7px;background:rgba(255,255,255,.2);color:#fff;padding:1px 6px;border-radius:3px;font-weight:800">● LIVE</span>
+          </div>
+          <div class="ph-body">
+            <div class="ph-greeting">Ciao Mario 👋</div>
+            <div class="ph-sub">1 riparazione in corso</div>
+            <div class="ph-ticket">
+              <div class="ph-tc">
+                <span style="background:var(--r);border-radius:3px;padding:1px 5px" data-comment-anchor="5980e90019-span">⚡ PT-014</span>
+                <span style="opacity:.7">iPhone 14 Pro</span>
+              </div>
+              <div class="ph-bar"><div class="ph-fill"></div></div>
+              <div style="font-size:7px;color:rgba(255,255,255,.5);margin-top:3px">In lavorazione · 2 davanti</div>
+            </div>
+            <div class="ph-cta" style="margin-top:8px">+ Nuova riparazione</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- iPad (left, floats B) -->
+    <div class="dev dev-ipad" onclick="openOv('ipad')">
+      <div class="ipad-cam"></div>
+      <div class="ipad-scr">
+        <!-- Marco 360° mini preview -->
+        <div style="background:#0F172A;padding:4px 8px;display:flex;align-items:center;gap:5px">
+          <span style="font-size:7px;font-weight:900;color:#fff">Marco <span style="color:var(--r)">360°</span></span>
+          <span style="margin-left:auto;background:rgba(220,38,38,.3);color:#FCA5A5;font-size:6px;padding:1px 5px;border-radius:3px;font-weight:800">7 attivi</span>
+        </div>
+        <div style="padding:6px;display:flex;flex-direction:column;gap:4px">
+          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:7px;padding:7px">
+            <div style="font-size:7.5px;font-weight:900;color:var(--r);margin-bottom:3px">⚡ PT-014 · iPhone 14 Pro</div>
+            <div style="font-size:6.5px;color:var(--mu)">Schermo · Marco P.</div>
+            <div style="height:2.5px;background:#F1F5F9;border-radius:2px;margin-top:4px"><div style="width:65%;height:100%;background:var(--r);border-radius:2px"></div></div>
+          </div>
+          <div style="display:flex;gap:4px">
+            <div style="flex:1;background:#ECFDF5;border:1px solid #BBF7D0;border-radius:7px;padding:6px">
+              <div style="font-size:6.5px;font-weight:900;color:#15803D">✅ WT-003</div>
+              <div style="font-size:6px;color:var(--mu)">Samsung · Pronto</div>
+            </div>
+            <div style="flex:1;background:#F8FAFC;border:1px solid var(--line);border-radius:7px;padding:6px">
+              <div style="font-size:6.5px;font-weight:900;color:var(--ink)">WT-004</div>
+              <div style="font-size:6px;color:var(--mu)">Xiaomi · Diagnosi</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:4px;margin-top:2px">
+            <div style="flex:1;background:#16A34A;color:#fff;border-radius:6px;padding:5px;text-align:center;font-size:6.5px;font-weight:800">💬 WhatsApp</div>
+            <div style="flex:1;background:var(--ink);color:#fff;border-radius:6px;padding:5px;text-align:center;font-size:6.5px;font-weight:800">📞 Chiama</div>
+          </div>
+        </div>
+      </div>
+      <div class="ipad-home"></div>
+    </div>
+
+    <!-- Mac (bottom, floats C) -->
+    <div class="dev dev-mac" onclick="openOv('mac')">
+      <div class="mac-frame">
+        <div class="mac-bar"><i style="background:#EF4444"></i><i style="background:#F59E0B"></i><i style="background:#10B981"></i></div>
+        <div class="mac-body">
+          <div style="display:flex;gap:3px;margin-bottom:4px">
+            <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:4px;padding:3px 8px;font-size:6px;font-weight:800;color:var(--r)">✦ Operativo</div>
+            <div style="font-size:6px;font-weight:600;color:var(--fa);padding:3px 8px">Clienti</div>
+            <div style="font-size:6px;font-weight:600;color:var(--fa);padding:3px 8px">Lab</div>
+            <div style="font-size:6px;font-weight:600;color:var(--fa);padding:3px 8px">Cal</div>
+          </div>
+          <div style="background:#F8FAFC;border-radius:6px;padding:8px;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:start">
+            <div style="background:#fff;border:1px solid var(--line);border-radius:5px;padding:5px">
+              <div style="font-size:7px;font-weight:900;color:var(--ink)">RP-0049 · OPPO a94</div>
+              <div style="font-size:6px;color:var(--mu)">Schermo · €154 · Marco P.</div>
+              <div style="margin-top:4px;display:flex;gap:2px">
+                <div style="background:#F97316;color:#fff;border-radius:3px;padding:2px 6px;font-size:5.5px;font-weight:800">📦 Pezzi</div>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid var(--line);border-radius:5px;padding:5px">
+              <div style="font-size:7px;font-weight:900;color:var(--ink)">RP-0048 · iPhone 13</div>
+              <div style="font-size:6px;color:var(--mu)">Batteria · €59 · Laura B.</div>
+              <div style="margin-top:4px;display:flex;gap:2px">
+                <div style="background:#3B82F6;color:#fff;border-radius:3px;padding:2px 6px;font-size:5.5px;font-weight:800">🔧 Lavoraz.</div>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid var(--line);border-radius:5px;padding:5px">
+              <div style="font-size:7px;font-weight:900;color:#15803D">RP-0047 ✅ Pronto</div>
+              <div style="font-size:6px;color:var(--mu)">Samsung · €45</div>
+            </div>
+            <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:5px;padding:5px">
+              <div style="font-size:7px;font-weight:900;color:var(--r)">+1 nuovo cliente</div>
+              <div style="font-size:6px;color:var(--mu)">Via app · preventivo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mac-base"></div>
+      <div class="mac-foot"></div>
+    </div>
+
+    <!-- click hint -->
+    <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--fa);white-space:nowrap;text-align:center">Tocca un device per la preview →</div>
+  </div>
+</div>
+
+<!-- ══ HOW IT WORKS ══ -->
+<div id="come-funziona" class="how">
+  <div class="how-inner">
+    <div class="sec-eye reveal" style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);margin-bottom:10px">Come funziona</div>
+    <div class="sec-h2 reveal" style="font-size:clamp(24px,3.5vw,38px);font-weight:900;letter-spacing:-.04em;color:var(--ink)">Da zero a <span style="color:var(--r)">produttivo in 10 minuti.</span></div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <h4>Numero · OTP · dentro</h4>
+        <p>Il cliente inserisce il cellulare. Riceve un SMS Telnyx brandizzato. In 30 secondi è autenticato. Niente password, niente email.</p>
+        <div class="step-api">POST /api/app-auth · Telnyx SMS</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">2</div>
+        <h4>Preventivo bloccato · poi sbloccato</h4>
+        <p>Marca → modello → guasto in 3 click. Il prezzo rimane nascosto finché il numero non è verificato. "A partire da 29€" — MAI esatto.</p>
+        <div class="step-api">POST /api/preventivi/calcola · 47.737 righe</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">3</div>
+        <h4>Ticket PT o WT · coda live</h4>
+        <p>Priority Ticket precede Walk-in, sempre. Il cliente vede "N persone davanti". Il display TV si aggiorna ogni 10 secondi.</p>
+        <div class="step-api">GET /api/queue-display · polling 10s</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">4</div>
+        <h4>Riparazione → Pronto · SMS automatico</h4>
+        <p>Ogni cambio stato (Diagnosi → In lavorazione → Pronto) manda SMS e WhatsApp. Il cliente non chiama più il negozio.</p>
+        <div class="step-api">waipro_notifications · n8n webhook</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 7 MODULI ══ -->
+<div class="mods">
+  <div class="sec-eye reveal" style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);margin-bottom:10px">Cosa abbiamo costruito per MrPhone</div>
+  <div style="font-size:clamp(24px,3.5vw,38px);font-weight:900;letter-spacing:-.04em;color:var(--ink);margin-bottom:6px" class="reveal">7 moduli · <span style="color:var(--r)">un sistema.</span></div>
+  <p style="font-size:15px;color:var(--mu);font-weight:500;max-width:500px;margin-bottom:0" class="reveal">Ogni modulo è Shopify Liquid nativo, pronto al deploy sul tema <code style="font-size:12px;background:#F1F5F9;padding:2px 6px;border-radius:4px">196970512709</code>.</p>
+  <div class="mod-grid">
+
+    <a class="mod reveal" href="demo.html">
+      <div class="mod-visual" style="background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%)">
+        <div class="mod-tag td">Demo Live</div>
+        <div class="mod-icon">▶</div>
+        <div class="mod-kpi" style="color:rgba(255,255,255,.5)">1:25 · narrato · auto-play</div>
+      </div>
+      <div class="mod-body">
+        <h3>Demo narrata · 90 secondi</h3>
+        <p>Tour completo con capitoli e narrazione. Mostralo nel pitch al cliente — converte senza parlare.</p>
+        <div class="mod-foot"><span class="mod-open">Avvia demo →</span><span class="mod-file">demo.html</span></div>
+      </div>
+    </a>
+
+    <a class="mod reveal" href="index.html">
+      <div class="mod-visual" style="background:linear-gradient(135deg,#FEF2F2 0%,#FFF7ED 100%)">
+        <div class="mod-tag td">App PWA</div>
+        <div class="mod-icon">📱</div>
+        <div class="mod-kpi">OTP → ticket → tracking</div>
+      </div>
+      <div class="mod-body">
+        <h3>App cliente PWA</h3>
+        <p>Wizard 8 step, prezzo bloccato fino all'OTP, ticket PT/WT, coda live, notifiche SMS/WhatsApp. Si installa come app nativa.</p>
+        <div class="mod-foot"><span class="mod-open">Apri app →</span><span class="mod-file">index.html</span></div>
+      </div>
+    </a>
+
+    <div class="mod reveal" onclick="openOv('mac')" style="cursor:pointer">
+      <div class="mod-visual" style="background:linear-gradient(135deg,#EFF6FF 0%,#F0FDF4 100%)">
+        <div class="mod-tag to">Gestionale</div>
+        <div class="mod-icon">🔧</div>
+        <div class="mod-kpi">4 tab · 6 stati · real-time</div>
+      </div>
+      <div class="mod-body">
+        <h3>Marco 360° — Repair360</h3>
+        <p>Operativo / Clienti / Lab / Calendario. Il tecnico cambia stato e il cliente riceve la notifica in automatico.</p>
+        <div class="mod-foot"><span class="mod-open">Apri gestionale →</span><span class="mod-file">journey.html</span></div>
+      </div>
+    </div>
+
+    <a class="mod reveal" href="yodeck.html">
+      <div class="mod-visual" style="background:linear-gradient(135deg,#DC2626 0%,#EA580C 100%)">
+        <div class="mod-tag" style="background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.3)">Signage</div>
+        <div class="mod-icon">📺</div>
+        <div class="mod-kpi" style="color:rgba(255,255,255,.7)">Yodeck · spot · TTS</div>
+      </div>
+      <div class="mod-body">
+        <h3>Vetrina360 · Yodeck</h3>
+        <p>Display TV per la coda, stile Poste. Slide spot con upload drag&amp;drop, embed YouTube, ticker, radio, voce sintetica.</p>
+        <div class="mod-foot"><span class="mod-open">Apri signage →</span><span class="mod-file">yodeck.html</span></div>
+      </div>
+    </a>
+
+    <a class="mod reveal" href="partner.html">
+      <div class="mod-visual" style="background:linear-gradient(135deg,#FFF7ED 0%,#FFEDD5 100%)">
+        <div class="mod-tag td">Onboarding</div>
+        <div class="mod-icon">🤝</div>
+        <div class="mod-kpi">Google GMB → 4 step → live</div>
+      </div>
+      <div class="mod-body">
+        <h3>Diventa Partner</h3>
+        <p>Flusso tablet-first a bassa frizione: Google My Business autocomplete, servizi Booking-style, piano con leva 90€/anno.</p>
+        <div class="mod-foot"><span class="mod-open">Prova onboarding →</span><span class="mod-file">partner.html</span></div>
+      </div>
+    </a>
+
+    <a class="mod reveal" href="journey-map.html">
+      <div class="mod-visual" style="background:linear-gradient(135deg,#F0FDF4 0%,#ECFDF5 100%)">
+        <div class="mod-tag tl">Live</div>
+        <div class="mod-icon">🗺</div>
+        <div class="mod-kpi">7 tappe · 3 percorsi · print</div>
+      </div>
+      <div class="mod-body">
+        <h3>Customer Journey Map</h3>
+        <p>7 tappe × 3 percorsi (portale / banco / lead). Filtro A/B/C, link ai sistemi live, stampa PDF in un click.</p>
+        <div class="mod-foot"><span class="mod-open">Apri journey →</span><span class="mod-file">journey-map.html</span></div>
+      </div>
+    </a>
+
+    <a class="mod reveal" href="produzione.html">
+      <div class="mod-visual" style="background:linear-gradient(135deg,#F8FAFC 0%,#F1F5F9 100%)">
+        <div class="mod-tag to">Hub</div>
+        <div class="mod-icon">⚙️</div>
+        <div class="mod-kpi">PROGRESS.md · handoff /code</div>
+      </div>
+      <div class="mod-body">
+        <h3>Centro di produzione</h3>
+        <p>Tutti i moduli, deploy checklist, prompt handoff per Claude Code, roadmap milestone M2→M6.</p>
+        <div class="mod-foot"><span class="mod-open">Apri hub →</span><span class="mod-file">produzione.html</span></div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- ══ PARTNER PITCH ══ -->
+<div id="scenari" class="pitch-wrap">
+  <div class="pitch">
+    <div class="pitch-glow1"></div><div class="pitch-glow2"></div>
+    <div class="pitch-top">
+      <div>
+        <div class="pitch-eye">Tre scenari · un sistema</div>
+        <h2>Per chi è <em>Repair360?</em></h2>
+        <p>PMI singola, catena multi-sede, flotta B2B. Lo stesso motore, configurato in 10 minuti per il tuo contesto.</p>
+      </div>
+      <div class="price-box">
+        <div class="price-tag">⚡ Lancio · solo oggi</div>
+        <div class="price-name">Piano PMI</div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <div class="price-val">90€</div>
+          <div class="price-old">348€</div>
+        </div>
+        <div class="price-period">per il primo anno · poi 29€/mese</div>
+        <div class="price-note"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Blocchi il prezzo entro la prova</div>
+      </div>
+    </div>
+    <div class="scenarios">
+      <div class="sc">
+        <div class="sc-ico" style="background:rgba(220,38,38,.2)">🔧</div>
+        <h4>PMI · officina singola</h4>
+        <p>Marco gestisce tutto. Giorgia risponde di notte. La coda si gestisce da sola. Zero carta, zero sprechi.</p>
+        <span class="sc-pill" style="background:rgba(220,38,38,.18);color:#FCA5A5">Coda · WhatsApp · Ticket QR</span>
+      </div>
+      <div class="sc">
+        <div class="sc-ico" style="background:rgba(124,58,237,.2)">🏪</div>
+        <h4>Catena multi-sede</h4>
+        <p>10 negozi, un cruscotto. Ogni sede con il suo tenant. Il titolare vede tutto. Zero perdita di dati.</p>
+        <span class="sc-pill" style="background:rgba(124,58,237,.18);color:#C4B5FD">Multi-tenant · RBAC · Report</span>
+      </div>
+      <div class="sc">
+        <div class="sc-ico" style="background:rgba(8,145,178,.2)">⚡</div>
+        <h4>Energia &amp; flotte B2B</h4>
+        <p>SLA garantito, fatturazione centralizzata, report mensile. White-label su misura.</p>
+        <span class="sc-pill" style="background:rgba(8,145,178,.18);color:#67E8F9">SLA · White-label · ERP</span>
+      </div>
+    </div>
+    <div class="pitch-cta">
+      <a href="partner.html" class="pc-r">🤝 Attiva il tuo negozio — gratis</a>
+      <a href="demo.html" class="pc-g">▶ Vedi prima la demo</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo" style="justify-content:center">
+    <div class="logo-icon" style="width:30px;height:30px;border-radius:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2.5"/></svg></div>
+    <span class="logo-word" style="font-size:15px">RiparaSubito<span>.tech</span></span>
+  </div>
+  <p class="ft-note">
+    Powered by MrPhone (tenant pilota) · Base44 · Telnyx · WhatsApp WABA · Shopify tema 196970512709 · Vetrina360<br>
+    <span style="color:#CBD5E1">Tutte le API restano lato server · WAIPRO Reparto Raffaello · 14 giugno 2026</span>
+  </p>
+</footer>
+
+<!-- ══ OVERLAYS ══ -->
+<div class="ov" id="ov-mac">
+  <button class="ov-x" onclick="closeOv('mac')">✕</button>
+  <div class="ov-lbl">Marco 360° · Repair360 Gestionale · Mac M1</div>
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="ov-mac-lid">
+      <div class="ov-mac-bar"><i style="background:#EF4444"></i><i style="background:#F59E0B"></i><i style="background:#10B981"></i><span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.4);font-weight:700">repair360.app · Marco</span></div>
+      <div class="ov-mac-scr"><iframe src="journey.html#gestionale" title="Repair360 gestionale"></iframe></div>
+    </div>
+    <div class="ov-mac-base"></div><div class="ov-mac-foot"></div>
+  </div>
+  <div class="ov-btns">
+    <a href="journey.html" target="_blank" class="nb nb-r">Apri a schermo intero ↗</a>
+    <a href="https://api.riparasubito.tech/gestione/quick-entry?tenant=mrphone" target="_blank" class="nb nb-o" style="color:#fff;border-color:rgba(255,255,255,.25);background:transparent">Quick Entry live ↗</a>
+  </div>
+</div>
+
+<div class="ov" id="ov-ipad">
+  <button class="ov-x" onclick="closeOv('ipad')">✕</button>
+  <div class="ov-lbl">Quick Entry · Tablet al banco · iPad 13"</div>
+  <div class="ov-ipad">
+    <div class="ov-ipad-cam"></div>
+    <div class="ov-ipad-scr"><iframe src="index.html" title="App tablet"></iframe></div>
+    <div class="ov-ipad-home"></div>
+  </div>
+</div>
+
+<div class="ov" id="ov-iphone">
+  <button class="ov-x" onclick="closeOv('iphone')">✕</button>
+  <div class="ov-lbl">Cliente · Web App PWA · iPhone</div>
+  <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;justify-content:center">
+    <div class="ov-iph">
+      <div class="ov-iph-isl"></div>
+      <div class="ov-iph-scr"><iframe src="index.html" title="App cliente"></iframe></div>
+      <div class="ov-iph-bar"></div>
+    </div>
+    <div style="max-width:260px">
+      <h3 style="font-size:22px;font-weight:900;color:#fff;margin-bottom:12px;letter-spacing:-.03em">Web App PWA</h3>
+      <p style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:24px">OTP via Telnyx → wizard → prezzo sbloccato → ticket → tracking → notifiche. Si installa sul telefono come app nativa, senza App Store.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <a href="index.html" target="_blank" class="nb nb-r" style="height:44px;justify-content:center">Apri web app →</a>
+        <a href="https://mrphone.tech/pages/app" target="_blank" class="nb nb-o" style="height:44px;justify-content:center;background:transparent;color:#fff;border-color:rgba(255,255,255,.25)">mrphone.tech live ↗</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Overlays ──
+function openOv(t){const o=document.getElementById('ov-'+t);if(o){o.classList.add('open');document.body.style.overflow='hidden';}}
+function closeOv(t){const o=document.getElementById('ov-'+t);if(o){o.classList.remove('open');document.body.style.overflow='';}}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){o.classList.remove('open');document.body.style.overflow='';}}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.ov.open').forEach(o=>{o.classList.remove('open');});document.body.style.overflow='';}});
+// ── Scroll reveal ──
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

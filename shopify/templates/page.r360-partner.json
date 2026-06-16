@@ -1,0 +1,19 @@
+{
+  "name": "Repair360 Partner Onboarding",
+  "sections": {
+    "r360-partner": {
+      "type": "r360-partner",
+      "settings": {
+        "tenant_id": "mrphone",
+        "api_base": "https://api.riparasubito.tech",
+        "starter_tickets_limit": 7,
+        "promo_annual_price": 90,
+        "promo_monthly_price": 29,
+        "trial_days": 14,
+        "show_gmb_lookup": true,
+        "google_places_key": "{{ shop.metafields.repair360.google_places_key.value }}"
+      }
+    }
+  },
+  "order": ["r360-partner"]
+}

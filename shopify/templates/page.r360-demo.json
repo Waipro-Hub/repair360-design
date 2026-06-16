@@ -1,0 +1,17 @@
+{
+  "name": "Repair360 Demo Live",
+  "sections": {
+    "r360-demo": {
+      "type": "r360-demo",
+      "settings": {
+        "tenant_id": "mrphone",
+        "app_url": "/pages/app",
+        "hub_url": "/pages/repair360",
+        "auto_start": false,
+        "total_chapters": 8,
+        "show_new_customer_chapter": true
+      }
+    }
+  },
+  "order": ["r360-demo"]
+}

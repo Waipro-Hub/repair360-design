@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<!-- {{@liquid}} layout/theme.liquid · section: repair360-journey -->
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Customer Journey Map — riparasubito.tech · WAIPRO Raffaello</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#DC2626;--ink:#0F172A;--bg:#07090F;--glass:rgba(255,255,255,.07);--border:rgba(255,255,255,.1)}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{height:4px;width:4px;background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:60;background:rgba(7,9,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.nav-logo-icon{width:34px;height:34px;border-radius:10px;background:var(--red);display:flex;align-items:center;justify-content:center}
+.nav-logo-text{font-weight:900;font-size:16px;letter-spacing:-.02em;color:#fff}
+.nav-logo-text span{color:var(--red)}
+.nav-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:100px;border:1px solid rgba(220,38,38,.4);color:rgba(220,38,38,.9);background:rgba(220,38,38,.08);white-space:nowrap}
+.nav-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.btn-sm{padding:7px 16px;border-radius:8px;border:none;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:opacity .15s}
+.btn-sm:hover{opacity:.85}
+.btn-red{background:var(--red);color:#fff}
+.btn-dark{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.btn-green{background:#16A34A;color:#fff}
+
+/* HERO */
+.hero{padding:80px 24px 56px;max-width:1000px;margin:0 auto;text-align:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);margin-bottom:24px;font-size:12px;font-weight:700;color:rgba(220,38,38,.9)}
+.hero h1{font-size:clamp(32px,6vw,64px);font-weight:900;letter-spacing:-.04em;line-height:1.04;margin-bottom:18px}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p{font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,.5);font-weight:500;line-height:1.65;max-width:600px;margin:0 auto 36px}
+
+/* PATH TABS */
+.path-tabs{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;margin-bottom:40px;flex-wrap:wrap;justify-content:center}
+.path-tab{padding:10px 22px;border-radius:10px;border:none;background:transparent;color:rgba(255,255,255,.45);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s ease;white-space:nowrap}
+.path-tab.active{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.path-tab[data-path="A"].active{background:rgba(220,38,38,.2);color:#F87171;border:1px solid rgba(220,38,38,.35)}
+.path-tab[data-path="B"].active{background:rgba(37,99,235,.2);color:#60A5FA;border:1px solid rgba(37,99,235,.35)}
+.path-tab[data-path="C"].active{background:rgba(22,163,74,.2);color:#4ADE80;border:1px solid rgba(22,163,74,.35)}
+
+/* GATE CALLOUT */
+.gate-callout{background:linear-gradient(135deg,rgba(220,38,38,.12),rgba(220,38,38,.04));border:1px solid rgba(220,38,38,.3);border-radius:20px;padding:20px 24px;max-width:900px;margin:0 auto 48px;display:flex;align-items:flex-start;gap:16px}
+.gate-icon{width:48px;height:48px;border-radius:14px;background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
+.gate-body h3{font-weight:900;font-size:17px;color:#F87171;margin-bottom:6px}
+.gate-body p{font-size:13.5px;color:rgba(255,255,255,.65);font-weight:500;line-height:1.6;margin-bottom:8px}
+.api-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);font-family:monospace;font-size:11px;color:rgba(255,255,255,.7);margin-right:6px;margin-bottom:4px}
+
+/* JOURNEY TABLE */
+.journey-wrap{overflow-x:auto;padding-bottom:16px;margin:0 auto;max-width:100%}
+.journey{display:grid;min-width:1200px;border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.journey-header{display:contents}
+.jh-cell{background:#111827;padding:12px 14px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);position:sticky;top:0;z-index:5}
+.jh-cell:first-child{background:#111827;color:rgba(255,255,255,.6);position:sticky;left:0;z-index:10}
+.jh-cell:last-child{border-right:none}
+
+/* CORSIE */
+.corsia{display:contents}
+.corsia-label{display:flex;align-items:center;gap:10px;padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.05);position:sticky;left:0;z-index:5;background:#0D1117}
+.corsia-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+.corsia-name{font-size:12px;font-weight:800;color:rgba(255,255,255,.8);line-height:1.3}
+.corsia-sub{font-size:10px;color:rgba(255,255,255,.35);font-weight:600;margin-top:2px}
+
+/* TAPPA CELLS */
+.tappa{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04);font-size:12px;color:rgba(255,255,255,.65);line-height:1.55;font-weight:500;vertical-align:top;position:relative;cursor:default;transition:background .2s ease;min-width:160px}
+.tappa:last-child{border-right:none}
+.tappa:hover{background:rgba(255,255,255,.03)}
+.tappa.hidden-path{opacity:.18;pointer-events:none}
+.tappa-head{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.tappa-head.path-A{color:#F87171}
+.tappa-head.path-B{color:#60A5FA}
+.tappa-head.path-C{color:#4ADE80}
+.tappa-head.path-sys{color:rgba(255,255,255,.4)}
+.tappa strong{color:#fff;font-weight:700}
+.tappa .api-tag{font-family:monospace;font-size:10px;color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:4px;word-break:break-all}
+.tappa .cond{color:rgba(255,255,255,.45);font-style:italic}
+
+/* TAPPA STATUS indicators */
+.tappa-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+
+/* LIVE LINKS */
+.live-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.live-link{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.25);color:#F87171;font-size:11px;font-weight:700;text-decoration:none;transition:background .15s}
+.live-link:hover{background:rgba(220,38,38,.2)}
+.live-link.green{background:rgba(22,163,74,.1);border-color:rgba(22,163,74,.25);color:#4ADE80}
+.live-link.blue{background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.25);color:#60A5FA}
+.live-link.grey{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.55)}
+
+/* ANGLES (nodo sciolto) */
+.angles{padding:80px 24px;max-width:960px;margin:0 auto}
+.angles-title{text-align:center;margin-bottom:48px}
+.angles-title h2{font-size:clamp(26px,4vw,44px);font-weight:900;letter-spacing:-.04em;margin-bottom:12px}
+.angles-title p{font-size:16px;color:rgba(255,255,255,.45);font-weight:500;line-height:1.65}
+.angles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.angle-card{background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:22px;padding:28px;position:relative;overflow:hidden}
+.angle-card::before{content:'';position:absolute;top:0;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.08),transparent);pointer-events:none}
+.angle-num{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,38,38,.8);margin-bottom:12px}
+.angle-card h3{font-size:19px;font-weight:900;margin-bottom:10px;line-height:1.2}
+.angle-card p{font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.65;font-weight:500}
+
+/* LIVE TAPPS section */
+.tapps{padding:0 24px 80px;max-width:960px;margin:0 auto}
+.tapps h2{font-size:clamp(24px,4vw,38px);font-weight:900;letter-spacing:-.04em;margin-bottom:8px;text-align:center}
+.tapps>p{text-align:center;color:rgba(255,255,255,.45);font-size:15px;font-weight:500;margin-bottom:36px}
+.tapp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.tapp-card{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:18px;padding:22px;transition:transform .2s ease,border-color .2s ease}
+.tapp-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.18)}
+.tapp-card h4{font-weight:800;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.tapp-card p{font-size:12.5px;color:rgba(255,255,255,.5);font-weight:500;line-height:1.55;margin-bottom:14px}
+.tapp-num{font-size:10px;font-weight:900;padding:2px 8px;border-radius:100px;background:rgba(220,38,38,.15);color:#F87171;flex-shrink:0}
+
+/* GAPS */
+.gaps{padding:0 24px 80px;max-width:960px;margin:0 auto}
+.gaps h2{font-size:clamp(22px,3.5vw,36px);font-weight:900;letter-spacing:-.04em;margin-bottom:32px;text-align:center}
+.gap-card{display:flex;gap:16px;padding:18px 20px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:16px;margin-bottom:12px;align-items:flex-start}
+.gap-num{width:44px;height:44px;border-radius:12px;background:rgba(245,158,11,.15);color:#FCD34D;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gap-body h4{font-weight:800;font-size:15px;color:#FCD34D;margin-bottom:4px}
+.gap-body p{font-size:13px;color:rgba(255,255,255,.6);font-weight:500;line-height:1.5}
+.gap-effort{display:inline-flex;align-items:center;font-size:11px;font-weight:700;color:rgba(245,158,11,.8);background:rgba(245,158,11,.1);padding:2px 8px;border-radius:4px;margin-top:6px}
+.gap-resolved{background:rgba(22,163,74,.06);border-color:rgba(22,163,74,.2)}
+.gap-resolved .gap-num{background:rgba(22,163,74,.15);color:#4ADE80}
+.gap-resolved .gap-body h4{color:#4ADE80}
+.gap-resolved .gap-effort{color:rgba(22,163,74,.9);background:rgba(22,163,74,.1)}
+
+/* PRINT */
+@media print{
+  nav,#printBtn,.path-tabs,.live-links{display:none !important}
+  body{background:white;color:black}
+  .journey{border:1px solid #ddd}
+  .tappa,.jh-cell,.corsia-label{background:white !important;color:#333 !important}
+  .hero h1{font-size:28px}
+  .gap-card,.angle-card{border:1px solid #ddd !important;background:#f9f9f9 !important}
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}60%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.fade-up{opacity:0;animation:fadeUp .6s ease .1s both}
+.fade-up-2{opacity:0;animation:fadeUp .6s ease .25s both}
+.fade-up-3{opacity:0;animation:fadeUp .6s ease .4s both}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;animation:pulse 2s infinite,blink 2s infinite}
+
+/* FLOW LINE */
+@keyframes flow{0%{background-position:0%}100%{background-position:200%}}
+.flow-line{height:2px;background:linear-gradient(90deg,#DC2626,#F97316,#DC2626);background-size:200%;animation:flow 2s linear infinite}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      </div>
+      <span class="nav-logo-text">Mr<span>Phone</span></span>
+    </a>
+    <span class="nav-badge">Customer Journey Map · v1.1 · 13 giu 2026</span>
+  </div>
+  <div class="nav-actions">
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:rgba(255,255,255,.5)"><span class="live-dot"></span>sistema live</span>
+    <a href="journey.html" class="btn-sm btn-dark">Piattaforma</a>
+    <button id="printBtn" onclick="window.print()" class="btn-sm btn-dark">🖨 Stampa</button>
+    <a href="index.html" class="btn-sm btn-red">← Prototipo</a>
+  </div>
+</nav>
+
+<div class="flow-line"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow fade-up">
+    <span class="live-dot"></span>
+    Repair360 · Journey Map · WAIPRO Raffaello
+  </div>
+  <h1 class="fade-up-2">Come un visitatore diventa<br><em>cliente del centro locale</em></h1>
+  <p class="fade-up-3">Tre percorsi, un motore. Il "nodo da sciogliere" del CEO: come ogni ingresso — portale rete o negozio diretto — converge in un unico DB, con il telefono come identità e il prezzo sempre dopo il numero.</p>
+
+  <!-- PATH SELECTOR -->
+  <div class="path-tabs" id="pathTabs">
+    <button class="path-tab active" data-path="ALL" onclick="switchPath('ALL',this)">Tutti i percorsi</button>
+    <button class="path-tab" data-path="A" onclick="switchPath('A',this)">🔴 A — Portale rete → prezzo</button>
+    <button class="path-tab" data-path="B" onclick="switchPath('B',this)">🔵 B — Negozio diretto</button>
+    <button class="path-tab" data-path="C" onclick="switchPath('C',this)">🟢 C — Lead tiepido / info</button>
+  </div>
+</div>
+
+<!-- GATE CALLOUT -->
+<div style="padding:0 24px;max-width:1300px;margin:0 auto 40px">
+  <div class="gate-callout">
+    <div class="gate-icon">🔒</div>
+    <div class="gate-body">
+      <h3>GATE VINCOLANTE — Telefono prima del prezzo</h3>
+      <p>Il visitatore <strong>non vede mai il prezzo</strong> prima di aver lasciato il cellulare e averlo verificato via OTP SMS. Solo dopo il numero viene sbloccato il prezzo "a partire da 29€" e parte il follow-up automatico (Giorgia via SMS/WhatsApp se non conferma).</p>
+      <div>
+        <span class="api-chip">POST /api/app-auth/request</span>
+        <span class="api-chip">POST /api/app-auth/verify</span>
+        <span class="api-chip">Telnyx · rate-limit 3/10min · 5err→blocco 10min</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JOURNEY TABLE -->
+<div style="padding:0 24px;max-width:1400px;margin:0 auto 80px;overflow-x:auto">
+<div class="journey" id="journeyTable" style="grid-template-columns:180px repeat(7,1fr)">
+
+  <!-- HEADER ROW -->
+  <div class="jh-cell">Corsie</div>
+  <div class="jh-cell">01 — Primo contatto</div>
+  <div class="jh-cell">02 — Profilazione</div>
+  <div class="jh-cell">03 — Gate telefono + OTP</div>
+  <div class="jh-cell">04 — Sblocco prezzo</div>
+  <div class="jh-cell">05 — Scelta centro</div>
+  <div class="jh-cell">06 — Ticket creato</div>
+  <div class="jh-cell">07 — Follow-up</div>
+
+  <!-- CORSIA 1: Cliente -->
+  <div class="corsia-label" style="background:#111827">
+    <div class="corsia-icon" style="background:rgba(220,38,38,.15)">🧑</div>
+    <div>
+      <div class="corsia-name">Cliente</div>
+      <div class="corsia-sub">Utente finale</div>
+    </div>
+  </div>
+  <!-- A01 -->
+  <div class="tappa" data-paths="A,ALL">
+    <div class="tappa-head path-A">A · Tappa 01</div>
+    Cerca su Google <strong>"riparazione iPhone Roma"</strong><br><br>
+    <span class="cond">SE:</span> trova riparasubito.tech<br>
+    <span class="cond">ALLORA:</span> atterra sulla landing del portale rete<br>
+    <div class="live-links">
+      <a href="https://riparasubito.tech" target="_blank" class="live-link">↗ riparasubito.tech</a>
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-B">B · Tappa 01</div>
+    Conosce già MrPhone, va su <strong>mrphone.tech</strong><br>
+    <span class="cond">ALLORA:</span> entra nel wizard del negozio
+    <div class="live-links">
+      <a href="https://mrphone.tech" target="_blank" class="live-link green">↗ mrphone.tech</a>
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-C">C · Tappa 01</div>
+    Naviga sul portale, solo curiosità<br>
+    <span class="cond">ALLORA:</span> exit-intent dopo 45s
+  </div>
+  <!-- B01 -->
+  <div class="tappa" data-paths="A,ALL">
+    <div class="tappa-head path-A">A · Tappa 02</div>
+    Avvia wizard: <strong>marca → modello → guasto</strong><br><br>
+    <span class="cond">SE</span> compila 3 step → GATE telefono<br>
+    <span class="cond">SE esce:</span> retargeting exit-intent
+    <div class="live-links">
+      <a href="https://mrphone.tech/pages/mp-preventivo" target="_blank" class="live-link">↗ Wizard preventivo</a>
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-B">B · Tappa 02</div>
+    Quick Entry in negozio<br>
+    <span class="cond">SE</span> già cliente → verde <strong>"Mario Rossi"</strong><br>
+    <span class="cond">SE</span> nuovo → anagrafica minima
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-C">C · Tappa 02</div>
+    Widget exit-intent <strong>"Giorgia ti risponde"</strong><br>
+    <span class="cond">SE</span> clicca → wa.me precompilato
+  </div>
+  <!-- T03 -->
+  <div class="tappa" data-paths="A,B,ALL" style="background:rgba(220,38,38,.04);border-left:2px solid rgba(220,38,38,.3)">
+    <div class="tappa-head path-A">A · GATE 03</div>
+    <strong>Inserisce cellulare → OTP SMS</strong><br>
+    <span class="cond">SE</span> OTP corretto ≤10min → prezzo sbloccato<br>
+    <span class="cond">SE</span> sbagliato ×5 → blocco 10min<br>
+    <span class="api-tag">POST /api/app-auth/request</span>
+    <span class="api-tag">SMS Telnyx brandizzato</span>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-B">B · Tappa 03</div>
+    Operatore inserisce telefono → <strong>deduplica</strong><br>
+    <span class="api-tag">lookup → waipro_customers</span>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-C">C · Tappa 03</div>
+    Lascia numero su WhatsApp/Giorgia<br>
+    <span class="cond">ALLORA:</span> lead tiepido nel CRM<br>
+    <span class="api-tag">POST /api/partner/apply</span>
+  </div>
+  <!-- T04 -->
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-A">A · Tappa 04</div>
+    Vede <strong>"a partire da 29€"</strong> — MAI esatto<br>
+    <strong>Leva:</strong> "Prenoti online? Non paghi i 15€"<br>
+    <span class="api-tag">POST /api/preventivi/calcola</span>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-B">B · Tappa 04</div>
+    Operatore vede stima "a partire da"<br>
+    <strong>47.737 righe</strong> listino prezzi<br>
+    <span class="api-tag">tenant_pricing</span>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-C">C · Tappa 04</div>
+    Nurturing: SMS/WA a <strong>24h e 72h</strong><br>
+    "Il preventivo è ancora disponibile"
+  </div>
+  <!-- T05 -->
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-A">A · Tappa 05</div>
+    Sceglie centro più vicino <strong>(MrPhone/TEC)</strong><br>
+    <span class="cond">SE</span> PT: priorità, prenota orario<br>
+    <span class="cond">SE</span> WT: walk-in<br>
+    Rating + attesa attuale visibili<br>
+    <span class="api-tag">GET /api/queue-display</span>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-B">B · Tappa 05</div>
+    Operatore sceglie <strong>PT o WT</strong> dal banco<br>
+    PT = priorità · WT = walk-in ora
+  </div>
+  <!-- T06 -->
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-A">A · Tappa 06</div>
+    <strong>Codice PT/WT gigante</strong> + SMS conferma<br>
+    "N persone davanti a te"<br>
+    Provenienza: <em>"rete"</em> nel gestionale<br>
+    <span class="api-tag">POST /api/quick-entry</span>
+    <div class="live-links">
+      <a href="https://api.riparasubito.tech/gestione/quick-entry?tenant=mrphone" target="_blank" class="live-link">↗ Quick Entry</a>
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-B">B · Tappa 06</div>
+    Ticket WT dal banco → <strong>display TV aggiornato in 15s</strong><br>
+    Provenienza: <em>"banco"</em><br>
+    <span class="api-tag">POST /api/quick-entry</span>
+    <div class="live-links">
+      <a href="https://api.riparasubito.tech/api/signage-media/mrphone/play" target="_blank" class="live-link green">↗ Display TV live</a>
+    </div>
+  </div>
+  <!-- T07 -->
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-A">A · Tappa 07</div>
+    <strong>Giorgia</strong> segue il lead via SMS/WA<br>
+    <span class="cond">SE</span> non si presenta 2h: "Sta per scadere"<br>
+    <span class="cond">SE</span> 3 no-risposta: lead freddo<br>
+    <div class="live-links">
+      <a href="tel:+390753690089" class="live-link">📞 +39 075 3690089</a>
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0"/>
+    <div class="tappa-head path-B">B · Tappa 07</div>
+    Ricevuto → Diagnosi → In lavorazione → <strong>Pronto</strong><br>
+    SMS/WA a ogni cambio stato<br>
+    "Pronto" → invito PWA<br>
+    <div class="live-links">
+      <a href="https://mrphone.tech/pages/mp-traccia" target="_blank" class="live-link green">↗ Tracking live</a>
+    </div>
+  </div>
+
+  <!-- CORSIA 2: Portale Rete -->
+  <div class="corsia-label" style="background:rgba(220,38,38,.05)">
+    <div class="corsia-icon" style="background:rgba(220,38,38,.15)">🌐</div>
+    <div>
+      <div class="corsia-name">Portale Rete</div>
+      <div class="corsia-sub">riparasubito.tech · Shopify</div>
+    </div>
+  </div>
+  <div class="tappa" data-paths="A,ALL" style="background:rgba(220,38,38,.02)">
+    <div class="tappa-head path-sys">A · Sistema</div>
+    Landing riparasubito.tech — hero + wizard CTA<br>
+    <strong>Shopify tema 196970512709</strong> · SEO ottimizzata<br>
+    Hero: "Ripara il tuo telefono con priorità"
+  </div>
+  <div class="tappa" data-paths="A,ALL" style="background:rgba(220,38,38,.02)">
+    <div class="tappa-head path-sys">A · Sistema</div>
+    Wizard <strong>/pages/rs-preventivo</strong><br>
+    3 step: marca → modello → guasto<br>
+    Shopify products.json + Cart API<br>
+    <span class="api-tag">POST /api/preventivi/calcola</span>
+  </div>
+  <div class="tappa" data-paths="A,ALL" style="background:rgba(220,38,38,.08);border-left:2px solid rgba(220,38,38,.5)">
+    <div class="tappa-head path-A">A · GATE</div>
+    <strong>Schermata BLOCCO</strong><br>
+    "Inserisci il numero per sbloccare il preventivo"<br>
+    Prezzo nascosto. Campo telefono + OTP.<br>
+    <span class="api-tag">POST /api/app-auth/request</span>
+    <span class="api-tag">POST /api/app-auth/verify</span>
+  </div>
+  <div class="tappa" data-paths="A,ALL" style="background:rgba(220,38,38,.02)">
+    <div class="tappa-head path-sys">A · Sblocco</div>
+    <strong>"a partire da 29€"</strong> + leva -15€ online<br>
+    MAI esatto · Fallback "da 29€" se API giù
+  </div>
+  <div class="tappa" data-paths="A,ALL" style="background:rgba(220,38,38,.02)">
+    <div class="tappa-head path-sys">A · Smistamento</div>
+    <strong>Mappa centri rete</strong>: MrPhone/TEC<br>
+    Lead atterra nel gestionale del centro<br>
+    provenienza=<em>"rete"</em><br>
+    <span class="api-tag">GET /api/queue-display?tenant=</span>
+  </div>
+  <div class="tappa" data-paths="A,ALL" style="background:rgba(220,38,38,.02)">
+    <div class="tappa-head path-sys">A · Ticket</div>
+    Ticket PT creato sul DB del centro<br>
+    Un solo DB, filtro <strong>tenant_id</strong><br>
+    Slug visibile · UUID mai esposto<br>
+    <span class="api-tag">POST /api/quick-entry</span>
+  </div>
+  <div class="tappa" data-paths="A,ALL" style="background:rgba(220,38,38,.02)">
+    <div class="tappa-head path-sys">A · Follow-up</div>
+    <strong>Giorgia</strong> — agente AI via Telnyx/WA<br>
+    Tool: calcola_prezzo = stessa fonte wizard<br>
+    3 tentativi → lead freddo nel CRM
+  </div>
+
+  <!-- CORSIA 3: Centro Locale -->
+  <div class="corsia-label" style="background:rgba(37,99,235,.05)">
+    <div class="corsia-icon" style="background:rgba(37,99,235,.15)">🏪</div>
+    <div>
+      <div class="corsia-name">Centro Locale</div>
+      <div class="corsia-sub">MrPhone / TEC</div>
+    </div>
+  </div>
+  <div class="tappa" data-paths="B,ALL" style="background:rgba(37,99,235,.02)">
+    <div class="tappa-head path-B">B · Ingresso</div>
+    <strong>mrphone.tech</strong> o quick entry tablet al banco<br>
+    Stesso motore, <strong>tenant=mrphone</strong><br>
+    Primo campo = sempre telefono cliente
+  </div>
+  <div class="tappa" data-paths="B,ALL" style="background:rgba(37,99,235,.02)">
+    <div class="tappa-head path-B">B · Riconoscimento</div>
+    Lookup cliente da telefono<br>
+    <span class="tappa-dot" style="background:#10B981"></span><strong>Verde</strong> se esistente<br>
+    "Mario Rossi — 3 riparazioni precedenti"<br>
+    Nuovo → anagrafica minima
+  </div>
+  <div class="tappa" data-paths="B,ALL" style="background:rgba(37,99,235,.05);border-left:2px solid rgba(37,99,235,.3)">
+    <div class="tappa-head path-B">B · Quick Entry 8 step</div>
+    <strong>Step 1: telefono sempre</strong><br>
+    Marca → modello → guasto → sblocco<br>
+    PIN / Segno / Nessuno (nota privacy)
+    <div class="live-links">
+      <a href="https://api.riparasubito.tech/gestione/quick-entry?tenant=mrphone" target="_blank" class="live-link blue">↗ Quick Entry live</a>
+    </div>
+  </div>
+  <div class="tappa" data-paths="B,ALL" style="background:rgba(37,99,235,.02)">
+    <div class="tappa-head path-B">B · Stima operatore</div>
+    Operatore vede "a partire da" — stesso listino<br>
+    <strong>47.737 righe</strong> tenant_pricing<br>
+    Stessa API usata da Giorgia<br>
+    <span class="api-tag">POST /api/preventivi/calcola</span>
+  </div>
+  <div class="tappa" data-paths="B,ALL" style="background:rgba(37,99,235,.02)">
+    <div class="tappa-head path-B">B · Tipo ticket</div>
+    <strong>PT</strong> = ha prenotato, priorità<br>
+    <strong>WT</strong> = già in negozio, walk-in<br>
+    Ritiro domicilio = appuntamento, non codice
+  </div>
+  <div class="tappa" data-paths="B,ALL" style="background:rgba(37,99,235,.02)">
+    <div class="tappa-head path-B">B · Ticket WT</div>
+    Display TV aggiornato in <strong>15 secondi</strong><br>
+    Sfondo chiaro, numero GIGANTE<br>
+    Precedenza PT su WT<br>
+    <span class="api-tag">GET /api/queue-display · polling 10s</span>
+    <div class="live-links">
+      <a href="https://api.riparasubito.tech/api/signage-media/mrphone/play" target="_blank" class="live-link blue">↗ Display TV</a>
+    </div>
+  </div>
+  <div class="tappa" data-paths="B,ALL" style="background:rgba(37,99,235,.02)">
+    <div class="tappa-head path-B">B · Lavorazione</div>
+    Ricevuto → Diagnosi → In lavorazione → <strong>Pronto</strong><br>
+    SMS/WA a ogni cambio stato<br>
+    Pronto → invito a salvare PWA<br>
+    Recensione Google +24h chiusura<br>
+    <div class="live-links">
+      <a href="https://mrphone.tech/pages/mp-traccia" target="_blank" class="live-link blue">↗ Tracking</a>
+    </div>
+  </div>
+
+  <!-- CORSIA 4: Sistema -->
+  <div class="corsia-label" style="background:rgba(100,116,139,.05)">
+    <div class="corsia-icon" style="background:rgba(100,116,139,.15)">⚙️</div>
+    <div>
+      <div class="corsia-name">Sistema</div>
+      <div class="corsia-sub">API / DB / SMS / n8n</div>
+    </div>
+  </div>
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-sys">Sistema</div>
+    Shopify CDN + middleware <strong>rs-custom-app</strong><br>
+    PM2 · porta 3213<br>
+    VPS <code style="font-size:10px;color:rgba(255,255,255,.5)">72.61.158.55</code> · Tailscale<br>
+    DB: <strong>waipro_template</strong>, isolamento tenant_id
+  </div>
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-sys">Sistema</div>
+    <span class="api-tag">POST /api/preventivi/calcola</span><br>
+    <strong>47.737 righe</strong> · Stesso motore portale+banco<br>
+    Fallback "da 29€" se API giù<br>
+    MAI prezzo esatto verso cliente
+  </div>
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-sys">A · Auth OTP</div>
+    <span class="api-tag">POST /api/app-auth/request</span><br>
+    SMS mittente brandizzato per tenant<br>
+    Rate limit: max 3 OTP/10min<br>
+    5 errori → blocco 10min<br>
+    <strong>OTP_DEBUG=0 in prod ✅</strong><br>
+    Saldo Telnyx: +3.42 USD (11 giu)
+  </div>
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-sys">Deduplica clienti</div>
+    Chiave = <strong>numero cellulare</strong><br>
+    Un cliente = un numero ovunque<br>
+    UUID solo interno, slug visibile<br>
+    <span class="api-tag">waipro_customers (phone unique key)</span>
+  </div>
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-sys">Queue engine</div>
+    <span class="api-tag">GET /api/queue-display</span><br>
+    <span class="api-tag">POST /api/queue-call</span><br>
+    Display TV polling 10s<br>
+    PT precede WT · codici scaduti riciclati da cron
+  </div>
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-sys">Ticket creation</div>
+    <span class="api-tag">POST /api/quick-entry</span><br>
+    Risposta: codice corto + riepilogo<br>
+    provenienza: "rete" | "banco"<br>
+    SE cliente con ticket aperto: avviso<br>
+    Display TV + web app sincronizzati
+  </div>
+  <div class="tappa" data-paths="A,B,ALL">
+    <div class="tappa-head path-sys">Notifiche + follow-up</div>
+    SMS Telnyx / WhatsApp WABA<br>
+    onTicketReady: SMS + badge PWA<br>
+    Follow-up no-show: <strong>n8n webhook</strong><br>
+    Recensione Google +24h chiusura<br>
+    <span class="api-tag">waipro_notifications</span>
+  </div>
+
+</div><!-- /journey -->
+</div>
+
+<!-- IL NODO SCIOLTO -->
+<div class="angles">
+  <div class="angles-title">
+    <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,38,38,.8);margin-bottom:12px">Il nodo sciolto</div>
+    <h2>3 angle che i competitor<br>non hanno</h2>
+    <p>Perché la dinamica scelta funziona — e cosa non possono copiare facilmente.</p>
+  </div>
+  <div class="angles-grid">
+    <div class="angle-card">
+      <div class="angle-num">Angle 01</div>
+      <h3>Identità da cellulare, non da email</h3>
+      <p>RepairShopr, RepairDesk, Orderry usano tutti email+password. Il target riparazione ha sempre il telefono in mano, spesso non ricorda l'email. OTP via SMS è frictionless — e nessun SaaS leader lo fa ancora.</p>
+    </div>
+    <div class="angle-card">
+      <div class="angle-num">Angle 02</div>
+      <h3>Portale rete → centro locale: un flusso unico</h3>
+      <p>I competitor gestiscono un negozio per volta. Repair360 connette negozi indipendenti (MrPhone, TEC) sotto un portale con smistamento geografico automatico. Il lead atterra nel gestionale locale con provenienza tracciata.</p>
+    </div>
+    <div class="angle-card">
+      <div class="angle-num">Angle 03</div>
+      <h3>Coda PT/WT in tempo reale con priorità visibile</h3>
+      <p>I competitor mostrano solo "stato". La coda Repair360 mostra attesa reale (N persone davanti), differenzia PT/WT con precedenza automatica, aggiorna display TV ogni 10s. Riduce le chiamate al negozio del 60-70%.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE TAPPS -->
+<div class="tapps">
+  <h2>MrPhone — Flussi live &amp; Correzioni</h2>
+  <p>Ogni tappa ha il link diretto al sistema di produzione.</p>
+  <div class="tapp-grid">
+    <div class="tapp-card">
+      <h4><span class="tapp-num">01</span> Preventivo</h4>
+      <p>Wizard 5 step — prezzo istantaneo. Marca → modello → guasto → OTP → "a partire da".</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <a href="https://mrphone.tech/pages/mp-preventivo" target="_blank" class="live-link">👁 Preventivo live</a>
+        <a href="https://api.riparasubito.tech/api/preventivi/calcola" target="_blank" class="live-link grey">API test</a>
+      </div>
+    </div>
+    <div class="tapp-card">
+      <h4><span class="tapp-num">02</span> App / Login</h4>
+      <p>Cellulare + OTP → web app cloud (nessuna installazione). OTP via SMS Telnyx, OTP_DEBUG=0 ✅</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <a href="https://mrphone.tech/pages/app" target="_blank" class="live-link">👁 Login live</a>
+        <a href="index.html" class="live-link green">🔬 Prototipo</a>
+      </div>
+    </div>
+    <div class="tapp-card">
+      <h4><span class="tapp-num">03</span> Tracking</h4>
+      <p>Ricevuto → Diagnosi → In lavorazione → Pronto. Notifiche push PWA + SMS a ogni cambio.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <a href="https://mrphone.tech/pages/mp-traccia" target="_blank" class="live-link">👁 Tracking live</a>
+      </div>
+    </div>
+    <div class="tapp-card">
+      <h4><span class="tapp-num">04</span> Coda / Display TV</h4>
+      <p>Display stile Poste — PT prima di WT. Polling 10s. Upload immagini e video spot (mp4/webm ≤100 MB).</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <a href="https://api.riparasubito.tech/api/signage-media/mrphone/play" target="_blank" class="live-link">👁 Display TV live</a>
+        <a href="index.html?screen=queue" class="live-link green">🔬 Prototipo coda</a>
+      </div>
+    </div>
+    <div class="tapp-card">
+      <h4><span class="tapp-num">05</span> Giorgia — Voice AI</h4>
+      <p>Risponde al telefono via Telnyx AI nativo. 3 tool: salva_lead, calcola_prezzo, prenota_coda. <strong>Da collaudare E2E.</strong></p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <a href="tel:+390753690089" class="live-link">📞 +39 075 3690089</a>
+      </div>
+    </div>
+    <div class="tapp-card">
+      <h4><span class="tapp-num">06</span> Gestionale operatore</h4>
+      <p>Quick entry tablet — 8 step. Step 1 sempre telefono. CRM: 3.815 clienti, 4.931 fatture tenant mrphone.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <a href="https://api.riparasubito.tech/gestione/quick-entry?tenant=mrphone" target="_blank" class="live-link">👁 Quick Entry live</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAPs -->
+<div class="gaps">
+  <h2>⚠️ Gap noti — cosa manca per MrPhone 100%</h2>
+  <div class="gap-card">
+    <div class="gap-num">01</div>
+    <div class="gap-body">
+      <h4>Grafica web app finale</h4>
+      <p>Tema chiaro post-lock mockup. Bug push: localStorage usa chiave sbagliata <code style="font-size:11px;background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px">app_session_token</code> invece di <code style="font-size:11px;background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px">app_session_mrphone</code>.</p>
+      <span class="gap-effort">Effort: 8–16h</span>
+    </div>
+  </div>
+  <div class="gap-card">
+    <div class="gap-num">02</div>
+    <div class="gap-body">
+      <h4>Pagamento priorità PT</h4>
+      <p>Prodotto deposito Shopify + webhook orders/paid → promuove ticket a PT automaticamente. Il pezzo che monetizza la coda.</p>
+      <span class="gap-effort">Effort: 6–8h</span>
+    </div>
+  </div>
+  <div class="gap-card">
+    <div class="gap-num">03</div>
+    <div class="gap-body">
+      <h4>Collaudo Giorgia E2E</h4>
+      <p>Chiamata reale a +39 075 3690089. Verificare che i 3 tool (salva_lead, calcola_prezzo, prenota_coda) rispondano correttamente.</p>
+      <span class="gap-effort">Effort: 2–4h</span>
+    </div>
+  </div>
+  <div class="gap-card">
+    <div class="gap-num">04</div>
+    <div class="gap-body">
+      <h4>Garanzia incoerente</h4>
+      <p>FAQ dice 12 mesi, hero dice 6 mesi, preventivo dice 90 giorni. Scegliere UN valore e uniformare su sito + preventivo.</p>
+      <span class="gap-effort">Effort: 1h</span>
+    </div>
+  </div>
+  <div class="gap-card">
+    <div class="gap-num">05</div>
+    <div class="gap-body">
+      <h4>Onboarding partner immediato</h4>
+      <p>Il flusso profilante (scenario A/B/C/D) è nel codice ma il questionario sul sito non lo collega al login account base.</p>
+      <span class="gap-effort">Effort: 4–6h</span>
+    </div>
+  </div>
+  <div class="gap-card gap-resolved">
+    <div class="gap-num">✅</div>
+    <div class="gap-body">
+      <h4>Risolto — Prezzi preventivo</h4>
+      <p>iPhone 13 + schermo ora restituisce LCD OLED 38,89€ (non più vetrino camera 3,49€). Fix bak-matching-1142 confermato live.</p>
+      <span class="gap-effort">✅ Risolto</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="padding:32px 24px;border-top:1px solid rgba(255,255,255,.07);text-align:center">
+  <p style="font-size:12px;color:rgba(255,255,255,.25);font-weight:600;line-height:1.8">
+    WAIPRO · Reparto Raffaello — Customer Journey Map riparasubito.tech · Versione 1.1 · 13 giugno 2026<br>
+    Decisioni vincolanti Cristian (CEO): <strong style="color:rgba(255,255,255,.4)">telefono prima del prezzo · due ingressi un motore · dedupe per cellulare · follow-up automatico</strong>
+  </p>
+  <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap">
+    <a href="index.html" class="btn-sm btn-red">← Prototipo app</a>
+    <a href="journey.html" class="btn-sm btn-dark">Piattaforma B2B</a>
+    <button onclick="window.print()" class="btn-sm btn-dark">🖨 Stampa PDF</button>
+  </div>
+</div>
+
+<script>
+// ── Path filter ──
+function switchPath(path, btn) {
+  document.querySelectorAll('.path-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tappa').forEach(cell => {
+    const paths = (cell.dataset.paths || 'ALL').split(',');
+    cell.classList.toggle('hidden-path', path !== 'ALL' && !paths.includes(path) && !paths.includes('ALL'));
+  });
+}
+
+// ── Print mode (URL param) ──
+if (new URLSearchParams(location.search).get('print') === '1') {
+  window.addEventListener('load', () => window.print());
+}
+
+// ── Scroll reveal ──
+const obs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'none'; obs.unobserve(e.target); }
+}), { threshold: 0.1 });
+document.querySelectorAll('.angle-card,.tapp-card,.gap-card').forEach(el => {
+  el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity .6s ease, transform .6s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>

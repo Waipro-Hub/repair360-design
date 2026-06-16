@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Repair360 · La piattaforma per il tuo laboratorio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#DC2626;--ink:#0F172A;--bg:#07090F}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+
+/* ── Glass ── */
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.glass-bright{background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(24px)}
+
+/* ── Pulse animations ── */
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--pc,rgba(220,38,38,.5)),0 8px 28px rgba(0,0,0,.55)}60%{box-shadow:0 0 0 14px rgba(0,0,0,0),0 8px 28px rgba(0,0,0,.55)}}
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-18px) rotate(-3deg)}}
+@keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes floatC{0%,100%{transform:translateY(0) rotate(2deg)}50%{transform:translateY(-22px) rotate(2deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@keyframes flow{0%{background-position:0%}100%{background-position:200%}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes slidein{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+
+.float-a{animation:floatA 4s ease-in-out infinite}
+.float-b{animation:floatB 5s ease-in-out infinite .6s}
+.float-c{animation:floatC 3.8s ease-in-out infinite 1.2s}
+.fade-up{opacity:0;animation:fadeUp .7s ease forwards}
+.fade-up:nth-child(2){animation-delay:.1s}.fade-up:nth-child(3){animation-delay:.2s}.fade-up:nth-child(4){animation-delay:.3s}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ── Service tiles ── */
+.svc{--pc:rgba(220,38,38,.5);padding:26px 18px;border-radius:22px;display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center;cursor:pointer;animation:pulse 2.8s ease-in-out infinite;transition:transform .25s ease,background .25s ease,border-color .25s ease;position:relative;overflow:hidden}
+.svc::before{content:'';position:absolute;top:0;left:0;right:0;height:44%;background:linear-gradient(to bottom,rgba(255,255,255,.1),transparent);pointer-events:none}
+.svc:hover{transform:translateY(-6px) scale(1.03)}
+.svc:nth-child(2){animation-delay:.35s}.svc:nth-child(3){animation-delay:.7s}.svc:nth-child(4){animation-delay:1.05s}
+.svc:nth-child(5){animation-delay:1.4s}.svc:nth-child(6){animation-delay:1.75s}.svc:nth-child(7){animation-delay:2.1s}.svc:nth-child(8){animation-delay:2.45s}
+.svc-icon{width:62px;height:62px;border-radius:18px;display:flex;align-items:center;justify-content:center;transition:transform .25s ease}
+.svc:hover .svc-icon{transform:scale(1.12)}
+
+/* ── Status dots ── */
+.dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+.dot::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+
+/* ── Progress bar ── */
+.flow-bar{height:3px;background:linear-gradient(90deg,var(--red),#F97316,var(--red));background-size:200%;animation:flow 2s linear infinite}
+
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;background:rgba(7,9,15,.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.07)}
+
+/* ── Tab bar ── */
+.tab-bar{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.05);border-radius:14px}
+.tab-btn{padding:8px 18px;border-radius:10px;border:none;background:transparent;color:rgba(255,255,255,.5);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s ease;white-space:nowrap}
+.tab-btn.active{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tab-pane{display:none}.tab-pane.active{display:block;animation:slidein .3s ease}
+
+/* ── Status badge ── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:800;gap:5px}
+.badge-orange{background:rgba(249,115,22,.2);color:#FB923C;border:1px solid rgba(249,115,22,.3)}
+.badge-green{background:rgba(22,163,74,.2);color:#4ADE80;border:1px solid rgba(22,163,74,.3)}
+.badge-blue{background:rgba(37,99,235,.2);color:#60A5FA;border:1px solid rgba(37,99,235,.3)}
+.badge-red{background:rgba(220,38,38,.2);color:#F87171;border:1px solid rgba(220,38,38,.3)}
+
+/* ── Marco ticket list ── */
+.tk-row{padding:12px 16px;border-radius:12px;cursor:pointer;transition:background .15s ease;display:flex;align-items:center;gap:12px;border:1px solid transparent}
+.tk-row:hover{background:rgba(255,255,255,.05)}
+.tk-row.selected{background:rgba(220,38,38,.1);border-color:rgba(220,38,38,.3)}
+
+/* ── Kanban ── */
+.kan-col{flex:1;min-width:140px}
+.kan-col-head{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);padding:0 4px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.kan-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:transform .15s ease}
+.kan-card:hover{transform:translateY(-2px)}
+
+/* ── Calendar ── */
+.cal-slot{height:38px;border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;transition:background .15s}
+.cal-slot:hover{background:rgba(255,255,255,.04)}
+.cal-booked{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.3);color:#F87171;font-weight:800}
+.cal-available{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.2);color:#4ADE80}
+
+/* ── Btn ── */
+.rsbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 22px;height:44px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:800;transition:transform .12s ease,opacity .15s ease}
+.rsbtn:active{transform:scale(.97)}
+.rsbtn-red{background:var(--red);color:#fff;box-shadow:0 8px 24px rgba(220,38,38,.4)}
+.rsbtn-dark{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.1)}
+.rsbtn-green{background:#16A34A;color:#fff;box-shadow:0 8px 20px rgba(22,163,74,.35)}
+
+/* ── WhatsApp ── */
+.wa-bubble{max-width:75%;padding:10px 14px;border-radius:16px;font-size:13.5px;font-weight:500;line-height:1.5;position:relative}
+.wa-bot{background:#fff;color:#0F172A;border-radius:16px 16px 16px 4px;align-self:flex-start}
+.wa-user{background:#DCF8C6;color:#0F172A;border-radius:16px 16px 4px 16px;align-self:flex-end}
+
+/* ── Responsive ── */
+@media(max-width:900px){nav .nav-links{display:none}
+.hero-devices{flex-direction:column;align-items:center;gap:20px}
+.hero-devices .float-a,.hero-devices .float-c{display:none}
+.marco-demo{flex-direction:column}
+.marco-sidebar{display:none}
+.marco-tickets{width:100% !important;border-right:none !important;max-height:200px;overflow-y:auto}
+.marco-detail{display:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+    <div style="width:36px;height:36px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+    </div>
+    <span style="font-weight:900;font-size:17px;letter-spacing:-.02em;color:#fff">Mr<span style="color:var(--red)">Phone</span> <span style="font-weight:500;color:rgba(255,255,255,.3);font-size:13px">Repair360</span></span>
+  </a>
+  <div class="nav-links" style="display:flex;gap:28px">
+    <a href="#gestionale" style="color:rgba(255,255,255,.6);font-size:14px;font-weight:600;text-decoration:none">Gestionale</a>
+    <a href="#services" style="color:rgba(255,255,255,.6);font-size:14px;font-weight:600;text-decoration:none">Servizi</a>
+    <a href="#giorgia" style="color:rgba(255,255,255,.6);font-size:14px;font-weight:600;text-decoration:none">Giorgia AI</a>
+  </div>
+  <div style="display:flex;gap:10px">
+    <a href="index.html" class="rsbtn rsbtn-dark" style="height:40px;font-size:13px;text-decoration:none">Prototipo</a>
+    <a href="repair.html" class="rsbtn rsbtn-red" style="height:40px;font-size:13px;text-decoration:none">Accedi · cloud</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 24px 60px;position:relative;overflow:hidden">
+  <div style="position:absolute;top:20%;left:5%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(220,38,38,.08),transparent 65%);pointer-events:none"></div>
+  <div style="position:absolute;bottom:10%;right:0%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.06),transparent 65%);pointer-events:none"></div>
+
+  <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(220,38,38,.35);background:rgba(220,38,38,.08);margin-bottom:24px" class="fade-up">
+    <span style="width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.8s ease-in-out infinite"></span>
+    <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85)">RiparaSubito.tech · Piattaforma SaaS per PMI e B2B</span>
+  </div>
+
+  <h1 style="font-size:clamp(38px,6.5vw,80px);font-weight:900;letter-spacing:-.04em;line-height:1.02;text-align:center;max-width:900px;margin:0 0 22px" class="fade-up">
+    Il <span style="color:var(--red)">sistema operativo</span><br>del tuo laboratorio.
+  </h1>
+  <p style="font-size:clamp(16px,2.2vw,20px);color:rgba(255,255,255,.5);max-width:580px;text-align:center;line-height:1.7;font-weight:500;margin:0 0 48px" class="fade-up">
+    Marco gestisce il negozio. Giorgia gestisce i clienti su WhatsApp. Repair360 tiene tutto insieme — ticket, coda, preventivi, pagamenti.
+  </p>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:88px" class="fade-up">
+    <a href="#gestionale" class="rsbtn rsbtn-red" style="height:52px;font-size:16px;padding:0 34px;text-decoration:none">Vedi Marco 360°</a>
+    <a href="index.html" class="rsbtn rsbtn-dark" style="height:52px;font-size:16px;padding:0 34px;text-decoration:none;border:1px solid rgba(255,255,255,.14)">Apri prototipo →</a>
+  </div>
+
+  <!-- 3 DEVICE MOCKUPS -->
+  <div class="hero-devices" style="display:flex;align-items:flex-end;justify-content:center;gap:clamp(10px,3vw,36px);width:100%;max-width:1100px">
+
+    <!-- iPhone (cliente) -->
+    <div class="float-a" style="width:160px;flex-shrink:0">
+      <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em">Cliente PWA</p>
+      <div style="width:160px;height:320px;border-radius:34px;border:7px solid #1A2030;background:#fff;overflow:hidden;box-shadow:0 0 0 2px #0D111C,0 40px 80px rgba(0,0,0,.8),0 0 60px rgba(220,38,38,.08)">
+        <div style="background:#0F172A;height:20px;display:flex;align-items:center;justify-content:space-between;padding:0 12px"><span style="color:white;font-size:8px;font-weight:800">9:41</span><span style="color:rgba(255,255,255,.7);font-size:8px">●●●</span></div>
+        <div style="padding:10px;font-size:8px;height:calc(100% - 20px);background:white">
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:10px">
+            <div style="width:16px;height:16px;background:var(--red);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2.5"/></svg>
+            </div>
+            <span style="font-weight:900;font-size:10px;color:#0F172A">Mr<span style="color:var(--red)">Phone</span></span>
+          </div>
+          <div style="font-size:16px;font-weight:900;color:#0F172A;line-height:1.1;margin-bottom:3px">Ciao Mario.</div>
+          <div style="font-size:7px;color:#64748B;margin-bottom:10px;font-weight:600">1 riparazione in corso</div>
+          <div style="background:#0F172A;border-radius:10px;padding:8px;color:white;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">
+              <div style="width:14px;height:14px;background:var(--red);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px">⚡</div>
+              <span style="font-size:9px;font-weight:900">PT-014</span>
+              <span style="margin-left:auto;font-size:6px;background:rgba(249,115,22,.3);color:#FB923C;padding:1px 5px;border-radius:4px;font-weight:800">In lavorazione</span>
+            </div>
+            <div style="font-size:7.5px;font-weight:700">iPhone 14 Pro · Schermo</div>
+            <div style="margin-top:5px;height:3px;background:rgba(255,255,255,.15);border-radius:2px"><div style="width:65%;height:100%;background:var(--red);border-radius:2px"></div></div>
+          </div>
+          <div style="background:var(--red);color:white;border-radius:8px;padding:7px;text-align:center;font-size:8.5px;font-weight:900">Prenota riparazione +</div>
+          <div style="position:absolute;bottom:10px;right:8px;background:#16A34A;color:white;border-radius:100px;padding:5px 10px;font-size:7px;font-weight:900;box-shadow:0 4px 12px rgba(22,163,74,.5)">💬 Giorgia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLET — coda TV Yodeck -->
+    <div class="float-b" style="flex-shrink:0">
+      <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em">TV Coda · Yodeck</p>
+      <div style="width:clamp(280px,36vw,380px);height:clamp(190px,25vw,250px);border-radius:14px;border:6px solid #1A2030;background:#F1F5F9;overflow:hidden;box-shadow:0 0 0 2px #0D111C,0 50px 100px rgba(0,0,0,.9)">
+        <div style="background:#0F172A;padding:5px 12px;display:flex;align-items:center;justify-content:space-between">
+          <span style="color:white;font-size:8px;font-weight:900">Mr<span style="color:var(--red)">Phone</span> · Via Roma 14</span>
+          <span style="color:rgba(255,255,255,.5);font-size:8px;font-weight:700" id="qclock">10:42</span>
+        </div>
+        <div style="padding:8px;display:flex;gap:6px;height:calc(100% - 28px)">
+          <div style="flex:1;background:var(--red);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,255,255,.15),transparent);pointer-events:none"></div>
+            <div style="font-size:7px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.1em">Stiamo servendo</div>
+            <div id="qserved" style="font-size:38px;font-weight:900;line-height:1;letter-spacing:-.03em;transition:all .4s ease">PT-013</div>
+            <div style="font-size:7px;opacity:.7;margin-top:3px">⚡ Priority</div>
+          </div>
+          <div style="width:100px;display:flex;flex-direction:column;gap:3px">
+            <div style="font-size:7px;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">In attesa</div>
+            <div id="qwait" style="display:flex;flex-direction:column;gap:3px">
+              <div style="background:white;border:1px solid #FECACA;border-radius:6px;padding:5px;text-align:center"><div style="font-size:6px;color:var(--red);font-weight:800">PT ⚡</div><div style="font-size:18px;font-weight:900;color:var(--red);line-height:1">PT-014</div></div>
+              <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:5px;text-align:center"><div style="font-size:6px;color:#64748B;font-weight:800">WT</div><div style="font-size:18px;font-weight:900;color:#0F172A;line-height:1">WT-003</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PC — Marco 360° -->
+    <div class="float-c" style="flex-shrink:0">
+      <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em">Marco 360° · PC</p>
+      <div style="width:clamp(300px,42vw,450px);height:clamp(200px,26vw,280px);border-radius:8px;border:2px solid #1A2030;background:white;overflow:hidden;box-shadow:0 50px 100px rgba(0,0,0,.9)">
+        <div style="background:#0F172A;padding:6px 12px;display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#EF4444"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#F59E0B"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#10B981"></div>
+          <span style="color:rgba(255,255,255,.4);font-size:8px;margin-left:auto">repair360.app · Marco</span>
+        </div>
+        <div style="background:#F8FAFC;padding:4px 10px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;gap:8px">
+          <div style="width:24px;height:24px;background:var(--red);border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:11px">M</div>
+          <span style="font-weight:900;font-size:10px;color:#0F172A">Marco 360°</span>
+          <div style="display:flex;gap:3px;margin-left:8px">
+            <span style="background:var(--red);color:white;font-size:7px;padding:2px 7px;border-radius:4px;font-weight:800">Operativo</span>
+            <span style="color:#64748B;font-size:7px;padding:2px 7px;font-weight:600">Clienti</span>
+            <span style="color:#64748B;font-size:7px;padding:2px 7px;font-weight:600">Laboratorio</span>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
+            <span style="color:var(--red);font-size:7px;font-weight:800">7 attivi</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;height:calc(100% - 56px)">
+          <div style="border-right:1px solid #E2E8F0;overflow:hidden">
+            <div style="padding:5px 8px;border-bottom:1px solid #E2E8F0;background:white">
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:9px;font-weight:900;color:#0F172A">RP-2026-0049</span>
+                <span style="background:#FED7AA;color:#9A3412;font-size:6px;padding:1px 6px;border-radius:4px;font-weight:800">Pezzi Arrivo</span>
+              </div>
+              <span style="font-size:8px;color:#64748B;font-weight:600">Schermo Rotto · OPPO a94</span>
+            </div>
+            <div style="padding:6px 8px">
+              <div style="font-size:7px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Progresso</div>
+              <div style="display:flex;align-items:center;gap:2px">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
+                <div style="flex:1;height:2px;background:var(--red)"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
+                <div style="flex:1;height:2px;background:var(--red)"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
+                <div style="flex:1;height:2px;background:#F97316"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#F97316;font-size:5px;color:white;display:flex;align-items:center;justify-content:center">●</div>
+                <div style="flex:1;height:2px;background:#E2E8F0"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#E2E8F0"></div>
+                <div style="flex:1;height:2px;background:#E2E8F0"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#E2E8F0"></div>
+              </div>
+              <div style="margin-top:6px;font-size:7px;font-weight:700;color:#0F172A">Cliente: marco pannacci</div>
+              <div style="font-size:7px;color:var(--red);font-weight:700">3935928069</div>
+              <div style="display:flex;gap:4px;margin-top:5px">
+                <div style="background:#16A34A;color:white;font-size:6px;padding:3px 8px;border-radius:5px;font-weight:700">WhatsApp</div>
+                <div style="background:#0F172A;color:white;font-size:6px;padding:3px 8px;border-radius:5px;font-weight:700">Chiama</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:6px 8px">
+            <div style="font-size:7px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Cambia Stato</div>
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <div style="background:#F97316;color:white;font-size:6.5px;padding:4px 8px;border-radius:5px;font-weight:800;cursor:pointer">🟠 In Lavorazione</div>
+              <div style="background:#F97316;color:white;font-size:6.5px;padding:4px 8px;border-radius:5px;font-weight:800;cursor:pointer">📦 Pezzi in Arrivo</div>
+              <div style="background:#16A34A;color:white;font-size:6.5px;padding:4px 8px;border-radius:5px;font-weight:800;cursor:pointer">✅ Completato</div>
+              <div style="background:#0F172A;color:white;font-size:6.5px;padding:4px 8px;border-radius:5px;font-weight:800;cursor:pointer">📞 Consegnato</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /hero-devices -->
+</section>
+
+<!-- MARCO 360° FULL DEMO -->
+<section id="gestionale" style="padding:100px 24px;background:#0D1117">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:56px">
+      <span style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,38,38,.85)">Il cuore della piattaforma</span>
+      <h2 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;letter-spacing:-.04em;margin:12px 0 16px">Marco 360° — Il gestionale<br>che i professionisti aspettavano.</h2>
+      <p style="font-size:16px;color:rgba(255,255,255,.5);font-weight:500;max-width:560px;margin:0 auto;line-height:1.65">Ticket, clienti, laboratorio e calendario. Tutto in uno. Funziona su PC, tablet e telefono. Zero formazione richiesta.</p>
+    </div>
+
+    <!-- FULL APP FRAME -->
+    <div style="border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 40px 100px rgba(0,0,0,.6)">
+      <!-- Window chrome -->
+      <div style="background:#111827;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.07)">
+        <div style="display:flex;gap:7px"><div style="width:12px;height:12px;border-radius:50%;background:#EF4444"></div><div style="width:12px;height:12px;border-radius:50%;background:#F59E0B"></div><div style="width:12px;height:12px;border-radius:50%;background:#10B981"></div></div>
+        <div style="flex:1;background:rgba(255,255,255,.05);border-radius:6px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.3);font-weight:500;max-width:320px">repair360.app/gestionale</div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:rgba(220,38,38,.9)">● live</span>
+          <div style="width:28px;height:28px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:13px">M</div>
+        </div>
+      </div>
+
+      <!-- App nav -->
+      <div style="background:#111827;padding:6px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(255,255,255,.07)">
+        <span style="font-weight:900;font-size:15px;color:white;margin-right:8px">Marco 360°</span>
+        <div class="tab-bar" id="marcoTabs">
+          <button class="tab-btn active" onclick="switchTab('operativo')">✦ Operativo</button>
+          <button class="tab-btn" onclick="switchTab('clienti')">👥 Clienti</button>
+          <button class="tab-btn" onclick="switchTab('laboratorio')">🔧 Laboratorio</button>
+          <button class="tab-btn" onclick="switchTab('calendario')">📅 Calendario</button>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:12px;align-items:center">
+          <span style="font-size:12px;color:rgba(255,255,255,.35);font-weight:700">7 attivi · 2 pronti</span>
+          <button class="rsbtn rsbtn-red" style="height:34px;font-size:12px;padding:0 14px">+ Nuovo Ticket</button>
+        </div>
+      </div>
+
+      <!-- TAB CONTENT -->
+      <div style="background:#0D1117;min-height:460px">
+
+        <!-- OPERATIVO TAB -->
+        <div id="tab-operativo" class="tab-pane active marco-demo" style="display:flex;height:460px">
+
+          <!-- Ticket list -->
+          <div class="marco-tickets" style="width:260px;border-right:1px solid rgba(255,255,255,.06);padding:12px;overflow-y:auto;flex-shrink:0">
+            <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;padding:4px 8px;margin-bottom:8px">Ticket attivi (7)</div>
+            <div id="tkList"></div>
+          </div>
+
+          <!-- Ticket detail -->
+          <div class="marco-detail" style="flex:1;padding:20px 24px;overflow-y:auto" id="tkDetail">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:gap 8px;gap:10px">
+              <div>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;gap:8px">
+                  <span style="font-size:22px;font-weight:900;color:white" id="dCode">RP-2026-0049</span>
+                  <span class="badge badge-orange" id="dBadge">📦 Pezzi in Arrivo</span>
+                </div>
+                <p style="font-size:14px;color:rgba(255,255,255,.5);font-weight:600;margin-top:4px" id="dSub">Schermo Rotto · OPPO / Realme a94</p>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="rsbtn rsbtn-green" style="height:38px;font-size:13px" onclick="sendWa()">💬 WhatsApp</button>
+                <button class="rsbtn rsbtn-dark" style="height:38px;font-size:13px">📞 Chiama</button>
+              </div>
+            </div>
+
+            <!-- 6-step progress -->
+            <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:16px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,.06)">
+              <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px">Progresso Riparazione</div>
+              <div style="display:flex;align-items:center" id="progressBar"></div>
+              <div style="display:flex;margin-top:6px" id="progressLabels"></div>
+            </div>
+
+            <!-- 2-col details -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:16px;border:1px solid rgba(255,255,255,.06)">
+                <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Dettagli</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div><p style="font-size:11px;color:rgba(255,255,255,.35);font-weight:600;margin-bottom:3px">Dispositivo</p><p style="font-size:13px;font-weight:700;color:white" id="dDevice">OPPO Realme a94</p></div>
+                  <div><p style="font-size:11px;color:rgba(255,255,255,.35);font-weight:600;margin-bottom:3px">Priorità</p><span class="badge badge-orange">Standard</span></div>
+                  <div><p style="font-size:11px;color:rgba(255,255,255,.35);font-weight:600;margin-bottom:3px">Preventivo</p><p style="font-size:18px;font-weight:900;color:white" id="dPrice">€154</p></div>
+                  <div><p style="font-size:11px;color:rgba(255,255,255,.35);font-weight:600;margin-bottom:3px">Creato</p><p style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)" id="dDate">12 feb · 11:43</p></div>
+                </div>
+              </div>
+              <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:16px;border:1px solid rgba(255,255,255,.06)">
+                <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Cambia Stato</div>
+                <div style="display:flex;flex-direction:column;gap:6px" id="stateButtons"></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /operativo -->
+
+        <!-- CLIENTI TAB -->
+        <div id="tab-clienti" class="tab-pane" style="padding:20px;height:460px;overflow-y:auto">
+          <div style="display:flex;gap:12px;margin-bottom:20px">
+            <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input placeholder="Cerca cliente…" style="background:none;border:none;outline:none;color:white;font-size:14px;font-weight:500;width:100%;font-family:inherit" />
+            </div>
+            <button class="rsbtn rsbtn-red" style="height:44px">+ Nuovo</button>
+          </div>
+          <div id="clientiList"></div>
+        </div>
+
+        <!-- LABORATORIO TAB -->
+        <div id="tab-laboratorio" class="tab-pane" style="padding:20px;height:460px;overflow-y:auto">
+          <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px" id="kanban"></div>
+        </div>
+
+        <!-- CALENDARIO TAB -->
+        <div id="tab-calendario" class="tab-pane" style="padding:20px;height:460px;overflow-y:auto">
+          <div id="calView"></div>
+        </div>
+
+      </div><!-- /tab content -->
+    </div><!-- /frame -->
+  </div>
+</section>
+
+<!-- SERVICE ICONS -->
+<section id="services" style="padding:100px 24px;background:#07090F">
+  <div style="max-width:960px;margin:0 auto;text-align:center">
+    <span style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,38,38,.85)">Ogni guasto coperto</span>
+    <h2 style="font-size:clamp(26px,4vw,46px);font-weight:900;letter-spacing:-.03em;margin:12px 0 48px">Icone che parlano da sole.<br>Prezzi sempre chiari.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px">
+      <div class="svc glass" style="--pc:rgba(220,38,38,.55)"><div class="svc-icon" style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div><div><p style="font-weight:800;font-size:15px">Schermo</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 49€</p></div></div>
+      <div class="svc glass" style="--pc:rgba(245,158,11,.55)"><div class="svc-icon" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="16" height="10" rx="2.5"/><line x1="22" y1="11" x2="22" y2="13"/></svg></div><div><p style="font-weight:800;font-size:15px">Batteria</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 39€</p></div></div>
+      <div class="svc glass" style="--pc:rgba(249,115,22,.55)"><div class="svc-icon" style="background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="#F97316"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><p style="font-weight:800;font-size:15px">Non Carica</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 35€</p></div></div>
+      <div class="svc glass" style="--pc:rgba(100,116,139,.55)"><div class="svc-icon" style="background:rgba(100,116,139,.15);border:1px solid rgba(100,116,139,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div><div><p style="font-weight:800;font-size:15px">Non Accende</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 29€</p></div></div>
+      <div class="svc glass" style="--pc:rgba(124,58,237,.55)"><div class="svc-icon" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div><div><p style="font-weight:800;font-size:15px">Audio</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 39€</p></div></div>
+      <div class="svc glass" style="--pc:rgba(37,99,235,.55)"><div class="svc-icon" style="background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div><p style="font-weight:800;font-size:15px">Fotocamera</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 45€</p></div></div>
+      <div class="svc glass" style="--pc:rgba(13,148,136,.55)"><div class="svc-icon" style="background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></div><div><p style="font-weight:800;font-size:15px">Software</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 29€</p></div></div>
+      <div class="svc glass" style="--pc:rgba(8,145,178,.55)"><div class="svc-icon" style="background:rgba(8,145,178,.15);border:1px solid rgba(8,145,178,.25)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="1.8" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div><div><p style="font-weight:800;font-size:15px">Danni Liquidi</p><p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px">da 49€</p></div></div>
+    </div>
+    <p style="margin-top:28px;font-size:13px;color:rgba(255,255,255,.25);font-weight:500">Diagnosi gratuita · non vincolante · paghi solo se decidi di riparare</p>
+  </div>
+</section>
+
+<!-- GIORGIA AI -->
+<section id="giorgia" style="padding:100px 24px;background:#0D1117">
+  <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+    <div>
+      <span style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(22,163,74,.85)">WhatsApp Business · WABA · Telnyx</span>
+      <h2 style="font-size:clamp(26px,3.5vw,42px);font-weight:900;letter-spacing:-.04em;margin:12px 0 16px;line-height:1.1">Giorgia risponde<br>ai tuoi clienti.<br>24 ore su 24.</h2>
+      <p style="font-size:15px;color:rgba(255,255,255,.55);font-weight:500;line-height:1.7;margin-bottom:24px">Bot AI su WhatsApp Business. Calcola preventivi, prenota slot, salva lead. I clienti non sanno che è un bot. Integrata con Telnyx per SMS e Voice AI.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ADE80;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700">📲 WhatsApp 24/7</span>
+        <span style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ADE80;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700">📞 Voice AI</span>
+        <span style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ADE80;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700">💶 Calcola preventivo</span>
+        <span style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ADE80;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700">🎟 Prenota coda</span>
+      </div>
+    </div>
+    <!-- WhatsApp chat mockup -->
+    <div style="border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5)">
+      <div style="background:#075E54;padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px">G</div>
+        <div><p style="font-weight:900;font-size:14px;color:white">Giorgia · MrPhone</p><p style="font-size:11px;color:rgba(255,255,255,.65)">● online · WhatsApp Business</p></div>
+      </div>
+      <div style="background:#ECE5DD;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:260px">
+        <div class="wa-bubble wa-bot">Ciao! Sono Giorgia 👋 Quanto costa riparare il mio iPhone 14 Pro?<div style="margin-top:6px;font-size:10px;color:rgba(0,0,0,.4);text-align:right">Giorgia ✓✓</div></div>
+        <div class="wa-bubble wa-user">Ciao! Ho l'iPhone 14 Pro con lo schermo rotto 😟<div style="margin-top:6px;font-size:10px;color:rgba(0,0,0,.4);text-align:right">10:23 ✓✓</div></div>
+        <div class="wa-bubble wa-bot" id="waTyping" style="display:none"><span style="display:inline-flex;gap:4px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#64748B;animation:blink 1s ease-in-out infinite"></span><span style="width:8px;height:8px;border-radius:50%;background:#64748B;animation:blink 1s ease-in-out infinite .3s"></span><span style="width:8px;height:8px;border-radius:50%;background:#64748B;animation:blink 1s ease-in-out infinite .6s"></span></span></div>
+        <div class="wa-bubble wa-bot" id="waReply" style="display:none">Per l'iPhone 14 Pro la sostituzione schermo parte da <b>€89</b>. Inclusa diagnosi gratuita e garanzia 12 mesi 🛡️ Vuoi prenotare uno slot?<div style="margin-top:6px;font-size:10px;color:rgba(0,0,0,.4);text-align:right">Giorgia ✓✓</div></div>
+      </div>
+      <div style="background:#F0F0F0;padding:10px 14px;display:flex;gap:8px;align-items:center">
+        <div style="flex:1;background:white;border-radius:24px;padding:10px 16px;font-size:13px;color:#94A3B8">Scrivi un messaggio…</div>
+        <div style="width:44px;height:44px;border-radius:50%;background:#16A34A;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="showWaReply()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:100px 24px;text-align:center;background:#0D1117">
+  <div style="max-width:600px;margin:0 auto">
+    <h2 style="font-size:clamp(30px,5vw,56px);font-weight:900;letter-spacing:-.04em;margin:0 0 18px">Pronto a partire?<br><span style="color:var(--red)">Gratis per 30 giorni.</span></h2>
+    <p style="font-size:16px;color:rgba(255,255,255,.45);font-weight:500;margin:0 0 40px;line-height:1.65">Nessuna carta di credito. Setup in 10 minuti. Il tuo laboratorio digitale da subito.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+      <a href="index.html" class="rsbtn rsbtn-red" style="height:56px;font-size:17px;padding:0 38px;text-decoration:none;box-shadow:0 16px 40px rgba(220,38,38,.45)">Apri il prototipo</a>
+      <a href="partner.html" class="rsbtn rsbtn-dark" style="height:56px;font-size:17px;padding:0 38px;border:1px solid rgba(255,255,255,.12);text-decoration:none">Registrati gratis · cloud</a>
+    </div>
+    <p style="margin-top:24px;font-size:13px;color:rgba(255,255,255,.2);font-weight:500">RiparaSubito.tech · Powered by Base44 · Telnyx · WhatsApp WABA · Shopify</p>
+  </div>
+</section>
+
+<script>
+// ── Cloud only: nessuna installazione, solo accesso/registrazione ──
+
+// ── Clock ──
+function updateClock(){const t=new Date();const q=document.getElementById('qclock');if(q)q.textContent=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');}
+setInterval(updateClock,1000);updateClock();
+
+// ── Scroll reveal ──
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── Tab switching ──
+function switchTab(name){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Marco data ──
+const TICKETS=[
+  {code:'RP-0049',sub:'Schermo Rotto · OPPO a94',     badge:'📦 Pezzi',     badgeClass:'badge-orange',price:'€154',device:'OPPO Realme a94',  date:'12 feb · 11:43',stato:3,client:'Marco P.',phone:'393 5928069'},
+  {code:'RP-0048',sub:'Batteria · iPhone 13',          badge:'🔧 Lavorazione',badgeClass:'badge-blue',  price:'€59', device:'iPhone 13',       date:'12 feb · 10:15',stato:2,client:'Laura B.',phone:'335 1234567'},
+  {code:'RP-0047',sub:'Non Carica · Samsung S23',      badge:'✅ Pronto',    badgeClass:'badge-green', price:'€45', device:'Samsung S23',     date:'11 feb · 16:40',stato:4,client:'Giulio M.',phone:'347 9876543'},
+  {code:'RP-0046',sub:'Fotocamera · Xiaomi 13T',       badge:'🔍 Diagnosi',  badgeClass:'badge-blue',  price:'€49', device:'Xiaomi 13T Pro',  date:'11 feb · 14:22',stato:1,client:'Sara C.',phone:'329 1111222'},
+  {code:'RP-0045',sub:'Audio · OnePlus 12',            badge:'📥 Ricevuto',  badgeClass:'badge-red',   price:'€39', device:'OnePlus 12',      date:'11 feb · 09:00',stato:0,client:'Davide R.',phone:'333 5556666'},
+];
+const STATI=['📥 Ricevuto','🔍 Diagnosi','🔧 In Lavorazione','📦 Pezzi in Arrivo','✅ Pronto','📞 Consegnato'];
+const STATI_COLORS=['badge-red','badge-blue','badge-blue','badge-orange','badge-green','badge-orange'];
+let selIdx=0;
+
+function renderTicketList(){
+  const el=document.getElementById('tkList');
+  if(!el)return;
+  el.innerHTML=TICKETS.map((t,i)=>`
+    <div class="tk-row${i===selIdx?' selected':''}" onclick="selectTicket(${i})">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;font-weight:900;color:white">${t.code}</span>
+          <span class="badge ${t.badgeClass}" style="font-size:10px">${t.badge}</span>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.45);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.sub}</div>
+      </div>
+      <span style="font-size:13px;font-weight:800;color:rgba(255,255,255,.7);flex-shrink:0">${t.price}</span>
+    </div>`).join('');
+}
+
+function renderProgress(statoIdx){
+  const bar=document.getElementById('progressBar');
+  const lbl=document.getElementById('progressLabels');
+  if(!bar||!lbl)return;
+  bar.innerHTML=STATI.map((s,i)=>{
+    const done=i<statoIdx,active=i===statoIdx;
+    const dotBg=done?'#10B981':active?'#DC2626':'rgba(255,255,255,.1)';
+    const lineBg=i<statoIdx?'#10B981':i===statoIdx?'#F97316':'rgba(255,255,255,.08)';
+    return `${i>0?`<div style="flex:1;height:3px;background:${i<=statoIdx?lineBg:'rgba(255,255,255,.08)'};border-radius:2px"></div>`:''}<div style="width:24px;height:24px;border-radius:50%;background:${dotBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px">${done?'✓':active?'●':''}</div>`;
+  }).join('');
+  lbl.innerHTML=`<div style="display:flex;width:100%;justify-content:space-between;margin-top:6px">${STATI.map((s,i)=>`<div style="font-size:9px;font-weight:${i===statoIdx?'800':'600'};color:${i===statoIdx?'#DC2626':i<statoIdx?'#10B981':'rgba(255,255,255,.3)'};text-align:center;flex:1">${s.replace(/^[^\s]+\s/,'')}</div>`).join('')}</div>`;
+}
+
+function renderStateButtons(tk){
+  const el=document.getElementById('stateButtons');
+  if(!el)return;
+  const colors=['#EF4444','#3B82F6','#3B82F6','#F97316','#10B981','#0F172A'];
+  el.innerHTML=STATI.map((s,i)=>`<button onclick="changeState(${TICKETS.indexOf(tk)},${i})" style="padding:9px 14px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:800;text-align:left;display:flex;align-items:center;gap:8px;background:${i===tk.stato?colors[i]:'rgba(255,255,255,.06)'};color:${i===tk.stato?'white':'rgba(255,255,255,.6)'};transition:all .15s ease" onmouseover="this.style.background='${colors[i]}20';this.style.color='white'" onmouseout="this.style.background='${i===tk.stato?colors[i]:'rgba(255,255,255,.06)'}';this.style.color='${i===tk.stato?'white':'rgba(255,255,255,.6)'}'"><span>${s}</span>${i===tk.stato?'<span style="margin-left:auto;font-size:10px;background:rgba(255,255,255,.2);padding:2px 6px;border-radius:4px">Attuale</span>':''}</button>`).join('');
+}
+
+function selectTicket(i){
+  selIdx=i;
+  const t=TICKETS[i];
+  document.getElementById('dCode').textContent=t.code;
+  document.getElementById('dSub').textContent=t.sub;
+  document.getElementById('dBadge').textContent=t.badge;
+  document.getElementById('dBadge').className='badge '+t.badgeClass;
+  document.getElementById('dDevice').textContent=t.device;
+  document.getElementById('dPrice').textContent=t.price;
+  document.getElementById('dDate').textContent=t.date;
+  renderProgress(t.stato);
+  renderStateButtons(t);
+  renderTicketList();
+}
+
+function changeState(tkIdx,statoIdx){
+  TICKETS[tkIdx].stato=statoIdx;
+  TICKETS[tkIdx].badge=STATI[statoIdx];
+  TICKETS[tkIdx].badgeClass=STATI_COLORS[statoIdx];
+  selectTicket(tkIdx);
+}
+
+// ── Clienti ──
+const CLIENTS=[
+  {name:'Mario Rossi',phone:'333 1234567',since:'2023',visits:4,spent:'€282',avatar:'MR',color:'#DC2626'},
+  {name:'Laura Bianchi',phone:'335 9876543',since:'2024',visits:2,spent:'€118',avatar:'LB',color:'#7C3AED'},
+  {name:'Giulio Manzoni',phone:'347 5551234',since:'2022',visits:8,spent:'€540',avatar:'GM',color:'#0891B2'},
+  {name:'Sara Conti',phone:'329 1112233',since:'2025',visits:1,spent:'€45',avatar:'SC',color:'#16A34A'},
+];
+function renderClienti(){
+  const el=document.getElementById('clientiList');if(!el)return;
+  el.innerHTML=CLIENTS.map(c=>`
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;margin-bottom:10px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
+      <div style="width:44px;height:44px;border-radius:14px;background:${c.color};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:white;flex-shrink:0">${c.avatar}</div>
+      <div style="flex:1;min-width:0">
+        <p style="font-weight:800;font-size:15px;color:white;margin:0">${c.name}</p>
+        <p style="font-size:12px;color:rgba(255,255,255,.4);font-weight:600;margin:2px 0 0">${c.phone} · dal ${c.since}</p>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <p style="font-size:16px;font-weight:900;color:white;margin:0">${c.spent}</p>
+        <p style="font-size:11px;color:rgba(255,255,255,.4);font-weight:600;margin:2px 0 0">${c.visits} visite</p>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button style="background:#16A34A;color:white;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">💬</button>
+        <button style="background:rgba(255,255,255,.08);color:white;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">📞</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── Kanban ──
+const KANBAN=[
+  {col:'📥 Ricevuto',color:'rgba(239,68,68,.2)',items:[{code:'RP-0045',sub:'OnePlus 12 · Audio'}]},
+  {col:'🔍 Diagnosi',color:'rgba(59,130,246,.2)',items:[{code:'RP-0046',sub:'Xiaomi 13T · Fotocamera'}]},
+  {col:'🔧 Lavorazione',color:'rgba(249,115,22,.2)',items:[{code:'RP-0048',sub:'iPhone 13 · Batteria'},{code:'RP-0049',sub:'OPPO a94 · Schermo'}]},
+  {col:'✅ Pronto',color:'rgba(16,185,129,.2)',items:[{code:'RP-0047',sub:'Samsung S23 · Carica'}]},
+];
+function renderKanban(){
+  const el=document.getElementById('kanban');if(!el)return;
+  el.innerHTML=KANBAN.map(col=>`
+    <div class="kan-col">
+      <div class="kan-col-head"><span>${col.col}</span><span style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:8px">${col.items.length}</span></div>
+      ${col.items.map(t=>`<div class="kan-card"><p style="font-size:12px;font-weight:800;color:white;margin:0 0 4px">${t.code}</p><p style="font-size:11px;color:rgba(255,255,255,.45);font-weight:600;margin:0">${t.sub}</p></div>`).join('')}
+    </div>`).join('');
+}
+
+// ── Calendario ──
+const DAYS=['Lun 16','Mar 17','Mer 18','Gio 19','Ven 20'];
+const HOURS=['9:30','10:30','11:30','14:30','15:30','16:30','17:30','18:30'];
+const BOOKED=new Set(['0-0','1-2','2-1','3-3','4-0','0-4','2-4']);
+const BOOKED_NAMES={
+  '0-0':'Mario R.','1-2':'Laura B.','2-1':'Giulio M.','3-3':'Sara C.','4-0':'Federico T.','0-4':'Anna V.','2-4':'Davide R.'
+};
+function renderCalendar(){
+  const el=document.getElementById('calView');if(!el)return;
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:60px repeat(5,1fr);gap:0;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07)">
+      <div style="background:rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.07)"></div>
+      ${DAYS.map(d=>`<div style="padding:10px;text-align:center;background:rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.07);font-size:12px;font-weight:800;color:rgba(255,255,255,.7)">${d}</div>`).join('')}
+      ${HOURS.map((h,hi)=>
+        `<div style="padding:10px;text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.3);border-right:1px solid rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)">${h}</div>`+
+        DAYS.map((_,di)=>{
+          const key=di+'-'+hi;
+          const booked=BOOKED.has(key);
+          const name=BOOKED_NAMES[key];
+          return `<div class="cal-slot${booked?' cal-booked':''}" style="border-top:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.05)">${booked?name:'+'}</div>`;
+        }).join('')
+      ).join('')}
+    </div>`;
+}
+
+// ── WhatsApp demo ──
+function showWaReply(){
+  document.getElementById('waTyping').style.display='block';
+  setTimeout(()=>{document.getElementById('waTyping').style.display='none';document.getElementById('waReply').style.display='block';},1400);
+}
+
+// ── Queue live update ──
+const QTICKETS=['PT-013','PT-014','WT-003','WT-004','WT-005'];let qIdx=0;
+setInterval(()=>{
+  qIdx=(qIdx+1)%QTICKETS.length;
+  const el=document.getElementById('qserved');
+  if(el){el.style.opacity='0';setTimeout(()=>{el.textContent=QTICKETS[qIdx];el.style.opacity='1';},300);}
+},4000);
+
+// ── Init ──
+renderTicketList();selectTicket(0);renderClienti();renderKanban();renderCalendar();
+</script>
+</body>
+</html>

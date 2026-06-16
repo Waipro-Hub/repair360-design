@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<!-- Vetrina360 · Insegna Live — dual-panel: gestisci a sx, preview a dx, vista laterale -->
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vetrina360 · MrPhone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#DC2626;--ink:#0F172A;--bg:#0A0C12}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.topbar{height:52px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;gap:12px}
+.tb-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.tb-logo-box{width:28px;height:28px;border-radius:7px;background:var(--red);display:flex;align-items:center;justify-content:center}
+.tb-logo-text{font-weight:900;font-size:14px;letter-spacing:-.02em;color:#fff}
+.tb-logo-text span{color:var(--red)}
+.view-tabs{display:flex;gap:2px;background:rgba(255,255,255,.06);border-radius:10px;padding:3px}
+.view-tab{padding:5px 14px;border-radius:7px;border:none;background:transparent;color:rgba(255,255,255,.45);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.view-tab.active{background:rgba(255,255,255,.12);color:#fff}
+.tb-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.tbtn{padding:6px 14px;border-radius:8px;border:none;font-family:inherit;font-size:12.5px;font-weight:800;cursor:pointer;transition:opacity .15s;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.tbtn:hover{opacity:.85}
+.tbtn-red{background:var(--red);color:#fff}
+.tbtn-dark{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.1)}
+
+/* LIVE DOT */
+.live-dot{width:7px;height:7px;border-radius:50%;background:#10B981;display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}60%{box-shadow:0 0 0 6px rgba(16,185,129,0)}}
+
+/* MAIN SPLIT */
+.main{flex:1;display:grid;overflow:hidden;transition:grid-template-columns .35s ease}
+.main.dual{grid-template-columns:340px 1fr}
+.main.preview-only{grid-template-columns:0 1fr}
+.main.manage-only{grid-template-columns:1fr 0}
+.main.side{flex-direction:row}
+
+/* LEFT PANEL — CONTENT MANAGER */
+.panel-left{background:#111218;border-right:1px solid rgba(255,255,255,.07);overflow-y:auto;display:flex;flex-direction:column;min-width:0}
+.panel-left::-webkit-scrollbar{width:3px;background:transparent}
+.panel-left::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.pleft-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pleft-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45)}
+.add-btn{width:28px;height:28px;border-radius:8px;background:var(--red);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;transition:opacity .15s}
+.add-btn:hover{opacity:.85}
+
+/* PLAYLIST */
+.playlist{padding:10px}
+.playlist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:background .15s;border:1.5px solid transparent;margin-bottom:6px;position:relative}
+.playlist-item:hover{background:rgba(255,255,255,.04)}
+.playlist-item.active{background:rgba(220,38,38,.1);border-color:rgba(220,38,38,.35)}
+.pl-thumb{width:56px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;background:rgba(255,255,255,.06);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.pl-info{flex:1;min-width:0}
+.pl-name{font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-meta{font-size:11px;color:rgba(255,255,255,.35);font-weight:500;margin-top:2px}
+.pl-dur{font-size:11px;font-weight:800;color:rgba(255,255,255,.4);flex-shrink:0}
+.pl-handle{cursor:grab;color:rgba(255,255,255,.2);font-size:14px;flex-shrink:0}
+
+/* UPLOAD ZONE */
+.upload-zone{margin:10px;border:2px dashed rgba(255,255,255,.12);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-zone:hover{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.04)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone-icon{font-size:24px;margin-bottom:6px}
+.upload-zone-text{font-size:12px;font-weight:700;color:rgba(255,255,255,.45)}
+.upload-zone-sub{font-size:11px;color:rgba(255,255,255,.25);font-weight:500;margin-top:3px}
+
+/* SCHEDULE */
+.schedule-block{margin:10px;padding:12px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.06)}
+.sch-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:10px}
+.sch-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sch-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.5);width:70px;flex-shrink:0}
+.sch-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 10px;color:#fff;font-family:inherit;font-size:12px;outline:none}
+.sch-input:focus{border-color:var(--red)}
+
+/* RIGHT PANEL — LIVE PREVIEW */
+.panel-right{background:#07090F;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow:hidden;position:relative;min-width:0}
+
+/* TV FRAME */
+.tv-frame-wrap{display:flex;flex-direction:column;align-items:center;width:100%;max-width:900px}
+.tv-bezel{width:100%;aspect-ratio:16/9;background:#111;border-radius:16px 16px 0 0;border:3px solid #1A1A1A;overflow:hidden;position:relative;box-shadow:0 0 0 1px #333,0 30px 80px rgba(0,0,0,.7)}
+.tv-screen{position:absolute;inset:4px;border-radius:12px;overflow:hidden;background:#0A0608}
+.tv-stand-neck{width:80px;height:30px;background:linear-gradient(to bottom,#1A1A1A,#111);margin:0 auto}
+.tv-stand-base{width:200px;height:10px;background:#1A1A1A;border-radius:0 0 8px 8px;margin:0 auto}
+.tv-brand-bug{position:absolute;top:8px;right:10px;z-index:20;font-size:9px;font-weight:900;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase}
+
+/* SIDE VIEW (lateral 45°) */
+.side-view{display:none;flex-direction:column;align-items:center;justify-content:center;flex:1}
+.tv-side{width:400px;height:250px;background:#111;border:3px solid #222;position:relative;overflow:hidden;transform:perspective(800px) rotateY(-28deg) rotateX(3deg);border-radius:8px;box-shadow:20px 20px 60px rgba(0,0,0,.8);transform-origin:center}
+.tv-side-screen{position:absolute;inset:4px;border-radius:4px;overflow:hidden}
+.tv-side-edge{position:absolute;right:-30px;top:0;bottom:0;width:30px;background:linear-gradient(to right,#1A1A1A,#0A0A0A);transform-origin:left;border-radius:0 4px 4px 0}
+.tv-wall{position:absolute;inset:0;background:linear-gradient(135deg,#1A1A2E,#16213E);z-index:-1;border-radius:0}
+
+/* VETRINA360 CONTENT */
+@keyframes bolt-move{0%{transform:translateX(-150%)}100%{transform:translateX(150vw)}}
+@keyframes ticker-scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+@keyframes slide-fade{0%{opacity:0}10%{opacity:1}90%{opacity:1}100%{opacity:0}}
+
+.yd-screen{width:100%;height:100%;background:#E53935;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.yd-main{flex:1;position:relative;overflow:hidden}
+.yd-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease;opacity:0}
+.yd-slide.visible{opacity:1}
+
+/* slide 0: promo image */
+.yd-slide-img{position:absolute;inset:0;background:linear-gradient(135deg,#B71C1C,#E53935,#B71C1C);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+.yd-slide-img .bolts span{position:absolute;font-size:clamp(16px,3vw,28px);animation:bolt-move linear infinite;white-space:nowrap;top:var(--y)}
+.yd-promo-text{position:relative;z-index:2;font-size:clamp(16px,3.5vw,36px);font-weight:900;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.3);line-height:1.15}
+.yd-promo-badge{margin-top:clamp(8px,1.5vw,14px);display:inline-block;padding:clamp(5px,1vw,10px) clamp(12px,2vw,20px);border-radius:100px;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);font-size:clamp(10px,2vw,16px);font-weight:800;color:#fff}
+
+/* slide 1: YouTube */
+.yd-yt{position:absolute;inset:0}
+.yd-yt iframe{width:100%;height:100%;border:none}
+.yd-yt-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border-radius:6px;padding:4px 8px;font-size:10px;font-weight:800;color:#fff;z-index:10;letter-spacing:.06em}
+
+/* slide 2: Umbria Energy partner */
+.yd-partner{position:absolute;inset:0;background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center;padding:20px}
+.yd-partner-inner{text-align:center;z-index:2;position:relative}
+.yd-partner-logo{font-size:clamp(18px,4vw,40px);font-weight:900;color:#4ADE80;letter-spacing:-.03em;margin-bottom:8px}
+.yd-partner-tagline{font-size:clamp(10px,2vw,18px);color:rgba(255,255,255,.8);font-weight:600;margin-bottom:12px}
+.yd-partner-cta{padding:clamp(6px,1.2vw,12px) clamp(16px,3vw,28px);border-radius:100px;background:#4ADE80;color:#1B4332;font-size:clamp(10px,1.8vw,16px);font-weight:900;display:inline-block}
+
+/* TICKER BAR */
+.yd-ticker{height:32px;background:#0F172A;overflow:hidden;position:relative;flex-shrink:0;display:flex;align-items:center}
+.yd-ticker-inner{white-space:nowrap;font-size:clamp(10px,1.8vw,13px);font-weight:800;color:#fff;animation:ticker-scroll 24s linear infinite;padding-left:100%;display:inline-block}
+
+/* VETRINA360 BADGE */
+.yd-badge{position:absolute;top:8px;left:8px;z-index:30;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,.9);font-size:10px;font-weight:900;color:#0F172A;backdrop-filter:blur(8px)}
+.yd-badge-dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse 2s infinite}
+
+/* RADIO btn */
+.radio-btn{position:absolute;top:8px;right:8px;z-index:30;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.4);border:1.5px solid rgba(255,255,255,.25);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s;backdrop-filter:blur(8px)}
+.radio-btn:hover{background:rgba(0,0,0,.6)}
+.radio-btn.on{background:rgba(22,163,74,.7);border-color:#4ADE80}
+
+/* SLIDE DOTS */
+.slide-dots{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:30;display:flex;gap:5px}
+.sd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}
+.sd.active{background:#fff;width:20px;border-radius:4px}
+
+/* BOTTOM INFO */
+.preview-info{margin-top:12px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.pinfo{font-size:11px;font-weight:700;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
+
+/* SLIDE COUNTER */
+.slide-counter{font-size:11px;font-weight:800;color:rgba(255,255,255,.3);position:absolute;bottom:8px;right:10px;z-index:30}
+
+/* MEDIA PREVIEW */
+.media-grid{padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.media-thumb{aspect-ratio:16/9;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);overflow:hidden;cursor:pointer;position:relative;transition:border-color .15s}
+.media-thumb:hover{border-color:rgba(220,38,38,.4)}
+.media-thumb img{width:100%;height:100%;object-fit:cover}
+.media-thumb-label{position:absolute;bottom:0;inset-x:0;padding:4px 6px;background:rgba(0,0,0,.6);font-size:10px;font-weight:700;color:#fff;text-align:center}
+
+@media(max-width:900px){
+  .main.dual{grid-template-columns:1fr}
+  .panel-left{display:none}
+  .side-view .tv-side{width:280px;height:175px}
+}
+</style>
+</head>
+<body>
+
+<audio id="radioAudio" src="https://radioitalia.leanstream.co/radioitalia" preload="none" loop></audio>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="repair.html" class="tb-logo">
+    <div class="tb-logo-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2.5"/></svg>
+    </div>
+    <span class="tb-logo-text">Mr<span>Phone</span></span>
+  </a>
+  <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35)">Vetrina360 · Insegna Live</span>
+
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="setView('dual',this)">⬛ Dual</button>
+    <button class="view-tab" onclick="setView('manage',this)">🎛 Gestisci</button>
+    <button class="view-tab" onclick="setView('preview',this)">📺 Preview TV</button>
+    <button class="view-tab" onclick="setView('side',this)">↗ Vista laterale</button>
+  </div>
+
+  <div class="tb-actions">
+    <span class="pinfo"><span class="live-dot"></span> LIVE</span>
+    <button class="tbtn tbtn-dark" onclick="toggleRadio()">🎵 <span id="radioLabel">Radio</span></button>
+    <a href="index.html" class="tbtn tbtn-red">← App</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main dual" id="mainGrid">
+
+  <!-- ═══ LEFT PANEL ═══ -->
+  <div class="panel-left">
+    <div class="pleft-head">
+      <span class="pleft-title">📋 Playlist</span>
+      <button class="add-btn" title="Aggiungi slide" onclick="addSlidePrompt()">+</button>
+    </div>
+
+    <!-- Playlist items -->
+    <div class="playlist" id="playlistEl">
+      <div class="playlist-item active" data-slide="0" onclick="jumpSlide(0)">
+        <div class="pl-thumb" style="background:linear-gradient(135deg,#B71C1C,#E53935)"><span style="font-size:16px">⚡</span></div>
+        <div class="pl-info"><div class="pl-name">Riparazione Express</div><div class="pl-meta">Slide promo · rosso</div></div>
+        <span class="pl-dur">8s</span>
+        <span class="pl-handle">⠿</span>
+      </div>
+      <div class="playlist-item" data-slide="1" onclick="jumpSlide(1)">
+        <div class="pl-thumb" style="background:#000"><span style="font-size:16px">▶</span></div>
+        <div class="pl-info"><div class="pl-name">Umbria Energy — spot</div><div class="pl-meta">YouTube · MWop5sYrdY0</div></div>
+        <span class="pl-dur">8s</span>
+        <span class="pl-handle">⠿</span>
+      </div>
+      <div class="playlist-item" data-slide="2" onclick="jumpSlide(2)">
+        <div class="pl-thumb" style="background:linear-gradient(135deg,#1B4332,#2D6A4F)"><span style="font-size:16px">🌿</span></div>
+        <div class="pl-info"><div class="pl-name">Partner Umbria Energy</div><div class="pl-meta">Slide partner · verde</div></div>
+        <span class="pl-dur">8s</span>
+        <span class="pl-handle">⠿</span>
+      </div>
+    </div>
+
+    <!-- Upload zone -->
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" accept="image/*,video/mp4,video/webm" multiple onchange="handleUpload(event)"/>
+      <div class="upload-zone-icon">⬆</div>
+      <div class="upload-zone-text">Trascina immagini o video</div>
+      <div class="upload-zone-sub">JPG · PNG · MP4 · WebM · max 100 MB</div>
+    </div>
+
+    <!-- Uploaded media -->
+    <div style="padding:8px 10px 4px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.25)">Libreria media</div>
+    <div class="media-grid" id="mediaGrid">
+      <div class="media-thumb" style="background:linear-gradient(135deg,#B71C1C,#E53935);display:flex;align-items:center;justify-content:center" onclick="useMedia('promo')">
+        <span style="font-size:24px">⚡</span>
+        <span class="media-thumb-label">Promo Express</span>
+      </div>
+      <div class="media-thumb" style="background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center" onclick="useMedia('partner')">
+        <span style="font-size:24px">🌿</span>
+        <span class="media-thumb-label">Umbria Energy</span>
+      </div>
+    </div>
+
+    <!-- Schedule -->
+    <div class="schedule-block">
+      <div class="sch-title">⏱ Programmazione</div>
+      <div class="sch-row">
+        <span class="sch-label">Rotazione</span>
+        <input class="sch-input" type="number" value="8" min="3" max="60" id="rotateSec" onchange="updateRotation()"/> <span style="font-size:11px;color:rgba(255,255,255,.3)">secondi</span>
+      </div>
+      <div class="sch-row">
+        <span class="sch-label">Ore attivo</span>
+        <input class="sch-input" type="time" value="09:00"/>
+        <span style="font-size:11px;color:rgba(255,255,255,.3)">→</span>
+        <input class="sch-input" type="time" value="20:00"/>
+      </div>
+      <div class="sch-row">
+        <span class="sch-label">Tenant</span>
+        <select class="sch-input">
+          <option>mrphone</option>
+          <option>tec</option>
+          <option>riparasubito</option>
+        </select>
+      </div>
+      <button onclick="saveSchedule()" style="width:100%;margin-top:8px;padding:9px;border-radius:8px;background:var(--red);border:none;color:#fff;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        Pubblica su Vetrina360 →
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ RIGHT PANEL — TV PREVIEW ═══ -->
+  <div class="panel-right" id="panelRight">
+
+    <!-- DUAL / PREVIEW mode: TV frontale -->
+    <div class="tv-frame-wrap" id="frontView">
+      <div class="tv-bezel">
+        <div class="tv-screen" id="tvScreen">
+          <!-- VETRINA360 DISPLAY -->
+          <div class="yd-screen">
+            <div class="yd-main" id="ydMain">
+
+              <!-- SLIDE 0: Promo Express -->
+              <div class="yd-slide visible" id="slide0">
+                <div class="yd-slide-img" style="position:absolute;inset:0">
+                  <div class="bolts" id="boltsContainer"></div>
+                  <div class="yd-promo-text">Riparazione Express ⚡<br>Pronta in 30 min</div>
+                  <div class="yd-promo-badge">🔧 MrPhone · Via Roma 14 · RiparaSubito.tech</div>
+                </div>
+              </div>
+
+              <!-- SLIDE 1: YouTube Umbria Energy -->
+              <div class="yd-slide" id="slide1">
+                <div class="yd-yt">
+                  <iframe id="ytFrame"
+                    src="https://www.youtube.com/embed/79CuY1-0FrE?autoplay=0&mute=1&loop=1&playlist=79CuY1-0FrE&controls=0&modestbranding=1"
+                    allow="autoplay; encrypted-media" allowfullscreen title="Spot Vetrina360"></iframe>
+                  <div class="yd-yt-badge">Partner Spot</div>
+                </div>
+              </div>
+
+              <!-- SLIDE 2: Umbria Energy partner -->
+              <div class="yd-slide" id="slide2">
+                <div class="yd-partner">
+                  <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(74,222,128,.08),transparent 60%),radial-gradient(circle at 70% 30%,rgba(16,185,129,.06),transparent 50%)"></div>
+                  <div class="yd-partner-inner">
+                    <div class="yd-partner-logo">Umbria Energy</div>
+                    <div class="yd-partner-tagline">Be Green · Be Umbria Energy</div>
+                    <div class="yd-partner-cta">Scopri le tariffe →</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="yd-badge"><div class="yd-badge-dot"></div>VETRINA360 · LIVE</div>
+              <button class="radio-btn" id="radioBtnTV" onclick="toggleRadio()">🎵</button>
+              <div class="slide-dots" id="slideDots"></div>
+              <div class="slide-counter" id="slideCounter">1/3</div>
+            </div>
+
+            <!-- TICKER -->
+            <div class="yd-ticker">
+              <div class="yd-ticker-inner" id="tickerText">
+                ⚡ Riparazione rapida come un fulmine · PT-014 in lavorazione · Tempo medio: 28 minuti · 🔧 RiparaSubito.tech · ⚡ MrPhone Via Roma 14 · 📱 Salva la web app sul telefono · 🌟 Garanzia 12 mesi · 🔋 Batterie e schermi in giornata ·
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tv-brand-bug">MrPhone · Vetrina360</div>
+      </div>
+      <div class="tv-stand-neck"></div>
+      <div class="tv-stand-base"></div>
+    </div>
+
+    <!-- SIDE VIEW (laterale 45°) -->
+    <div class="side-view" id="sideViewEl">
+      <div style="position:relative">
+        <div style="position:absolute;inset:-60px -80px -60px -40px;background:linear-gradient(135deg,#1A1A2E,#16213E);border-radius:16px;z-index:0"></div>
+        <div class="tv-side" style="position:relative;z-index:1">
+          <div class="tv-side-screen" id="tvSideScreen">
+            <div style="width:100%;height:100%;background:#E53935;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative">
+              <div id="sideBolts"></div>
+              <div style="font-size:clamp(12px,4vw,22px);font-weight:900;color:#fff;text-align:center;padding:10px;position:relative;z-index:2;text-shadow:0 2px 10px rgba(0,0,0,.3)" id="sideContent">Riparazione Express ⚡<br>Pronta in 30 min</div>
+            </div>
+          </div>
+          <div class="tv-side-edge"></div>
+        </div>
+        <p style="text-align:center;margin-top:16px;font-size:11px;font-weight:700;color:rgba(255,255,255,.3);position:relative;z-index:1">Vista laterale negozio · 45°</p>
+      </div>
+    </div>
+
+    <!-- Preview info -->
+    <div class="preview-info" id="previewInfo">
+      <span class="pinfo"><span class="live-dot"></span> Polling 10s · RiparaSubito.tech</span>
+      <span class="pinfo" id="slideInfo">Slide 1/3 · 8s rotazione</span>
+      <span class="pinfo">PT precede WT · MrPhone Via Roma 14</span>
+    </div>
+
+  </div><!-- /panel-right -->
+
+</div><!-- /main -->
+
+<script>
+// ── State ──
+let curSlide = 0;
+const TOTAL_SLIDES = 3;
+let rotateSec = 8;
+let rotateTimer = null;
+let radioOn = false;
+
+// ── Bolt animation (generate once) ──
+const boltsContainer = document.getElementById('boltsContainer');
+for (let i = 0; i < 5; i++) {
+  const s = document.createElement('span');
+  s.textContent = '⚡⚡⚡⚡⚡';
+  s.style.cssText = `position:absolute;font-size:clamp(16px,3vw,28px);animation:bolt-move ${1.2+i*.35}s linear infinite;animation-delay:${i*.28}s;top:${15+i*16}%;white-space:nowrap;transform:translateX(-150%)`;
+  boltsContainer.appendChild(s);
+}
+const sideBolts = document.getElementById('sideBolts');
+for (let i = 0; i < 3; i++) {
+  const s = document.createElement('span');
+  s.textContent = '⚡⚡⚡';
+  s.style.cssText = `position:absolute;font-size:14px;animation:bolt-move ${1.1+i*.3}s linear infinite;animation-delay:${i*.2}s;top:${20+i*22}%;white-space:nowrap;opacity:.6;transform:translateX(-150%)`;
+  sideBolts.appendChild(s);
+}
+
+// ── Build slide dots ──
+function buildDots() {
+  const d = document.getElementById('slideDots');
+  d.innerHTML = Array.from({length:TOTAL_SLIDES},(_,i) =>
+    `<div class="sd${i===curSlide?' active':''}" onclick="jumpSlide(${i})"></div>`).join('');
+}
+buildDots();
+
+// ── Jump to slide ──
+function jumpSlide(n) {
+  document.querySelectorAll('.yd-slide').forEach((s,i) => s.classList.toggle('visible', i===n));
+  document.querySelectorAll('.playlist-item').forEach((p,i) => p.classList.toggle('active', i===n));
+  document.getElementById('slideCounter').textContent = `${n+1}/${TOTAL_SLIDES}`;
+  document.getElementById('slideInfo').textContent = `Slide ${n+1}/${TOTAL_SLIDES} · ${rotateSec}s rotazione`;
+  buildDots();
+  // update side view
+  const sideContents = ['Riparazione Express ⚡<br>Pronta in 30 min','<span style="color:#4ADE80">Umbria Energy</span><br><span style="font-size:.7em">Be Green</span>','<span style="color:#4ADE80">Partner</span><br><span style="font-size:.7em">Umbria Energy</span>'];
+  document.getElementById('sideContent').innerHTML = sideContents[n] || sideContents[0];
+  const sideBg = ['linear-gradient(135deg,#B71C1C,#E53935)','#000','linear-gradient(135deg,#1B4332,#2D6A4F)'];
+  document.querySelector('.tv-side-screen > div').style.background = sideBg[n] || sideBg[0];
+  curSlide = n;
+  // activate YouTube autoplay when on slide 1
+  const yt = document.getElementById('ytFrame');
+  if (yt) {
+    const base = 'https://www.youtube.com/embed/79CuY1-0FrE?mute=1&loop=1&playlist=79CuY1-0FrE&controls=0&modestbranding=1';
+    yt.src = n===1 ? base+'&autoplay=1' : base+'&autoplay=0';
+  }
+}
+
+// ── Auto-rotate ──
+function startRotation() {
+  if (rotateTimer) clearInterval(rotateTimer);
+  rotateTimer = setInterval(() => jumpSlide((curSlide+1)%TOTAL_SLIDES), rotateSec*1000);
+}
+startRotation();
+
+function updateRotation() {
+  rotateSec = parseInt(document.getElementById('rotateSec').value) || 8;
+  startRotation();
+}
+
+// ── View modes ──
+function setView(mode, btn) {
+  document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('mainGrid');
+  const front = document.getElementById('frontView');
+  const side = document.getElementById('sideViewEl');
+  const pInfo = document.getElementById('previewInfo');
+
+  grid.className = 'main';
+  front.style.display = 'flex'; side.style.display = 'none'; pInfo.style.display = 'flex';
+  document.querySelector('.panel-left').style.display = '';
+
+  if (mode === 'dual') { grid.classList.add('dual'); }
+  else if (mode === 'manage') { grid.classList.add('manage-only'); }
+  else if (mode === 'preview') { grid.classList.add('preview-only'); }
+  else if (mode === 'side') {
+    grid.classList.add('preview-only');
+    front.style.display = 'none'; side.style.display = 'flex';
+  }
+}
+
+// ── Upload handler ──
+function handleUpload(ev) {
+  const files = [...ev.target.files];
+  const grid = document.getElementById('mediaGrid');
+  files.forEach(file => {
+    const url = URL.createObjectURL(file);
+    const div = document.createElement('div');
+    div.className = 'media-thumb';
+    div.innerHTML = `<img src="${url}" alt="${file.name}"><span class="media-thumb-label">${file.name.slice(0,18)}</span>`;
+    div.onclick = () => addToPlaylist(file.name, url);
+    grid.appendChild(div);
+    addToPlaylist(file.name, url, true);
+  });
+}
+
+function addToPlaylist(name, thumb, auto) {
+  const pl = document.getElementById('playlistEl');
+  const div = document.createElement('div');
+  div.className = 'playlist-item';
+  div.innerHTML = `<div class="pl-thumb" style="background:rgba(255,255,255,.1)"><img src="${thumb}" style="width:100%;height:100%;object-fit:cover"/></div><div class="pl-info"><div class="pl-name">${name.slice(0,20)}</div><div class="pl-meta">Immagine caricata</div></div><span class="pl-dur">8s</span><span class="pl-handle">⠿</span>`;
+  pl.appendChild(div);
+}
+
+function addSlidePrompt() {
+  const url = prompt('Inserisci URL immagine o YouTube (es: https://youtube.com/watch?v=...)');
+  if (!url) return;
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const id = url.split('v=').pop().split('&')[0];
+    addToPlaylist('YouTube: '+id, '', false);
+  } else {
+    addToPlaylist('Slide personalizzata', url, false);
+  }
+}
+
+function useMedia(type) { alert(`Usa "${type}" nella playlist — drag & drop per riordinare.`); }
+
+// ── Radio ──
+function toggleRadio() {
+  const audio = document.getElementById('radioAudio');
+  const lbl = document.getElementById('radioLabel');
+  const btn = document.getElementById('radioBtnTV');
+  radioOn = !radioOn;
+  if (radioOn) { audio.play().catch(()=>{}); lbl.textContent='Radio ON'; if(btn)btn.classList.add('on'); }
+  else { audio.pause(); lbl.textContent='Radio'; if(btn)btn.classList.remove('on'); }
+}
+
+// ── Save schedule (demo) ──
+function saveSchedule() {
+  const tenant = document.querySelector('.sch-input select, select.sch-input')?.value || 'mrphone';
+  alert(`✓ Playlist pubblicata su Vetrina360 per tenant "${tenant}"\nAPI: POST /api/signage-media/${tenant}/schedule\nProssima sincronizzazione: 15s`);
+}
+</script>
+</body>
+</html>

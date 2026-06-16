@@ -1,0 +1,218 @@
+{% comment %}
+  r360-hub.liquid — Repair360 Hub Section
+  Shopify theme: 196970512709 · mrphone3.myshopify.com
+  Deploy: Shopify Admin > Themes > Edit Code > sections/r360-hub.liquid
+
+  Liquid variables used:
+  - shop.name, shop.metafields.repair360.*
+  - section.settings.*
+  - 'repair360.css' | asset_url
+{% endcomment %}
+
+{% assign tenant = shop.metafields.repair360.tenant_id.value | default: section.settings.tenant_id %}
+{% assign api_base = shop.metafields.repair360.api_base.value | default: section.settings.api_base %}
+
+{{ 'repair360.css' | asset_url | stylesheet_tag }}
+
+<section class="r360-hub" id="r360-hub-{{ section.id }}" data-tenant="{{ tenant }}">
+
+  <!-- NAV injected by theme layout — this section manages body only -->
+
+  <!-- HERO -->
+  <div class="r360-hero">
+    <div class="r360-hero-text">
+      <div class="r360-badge">
+        <span class="r360-live-dot"></span>
+        {{ shop.name }} · Repair360 · in produzione
+      </div>
+      <h1 class="r360-h1">
+        {{ section.settings.hero_headline | escape }}
+      </h1>
+      <p class="r360-sub">{{ section.settings.hero_sub | escape }}</p>
+
+      <ul class="r360-usp">
+        <li>Giorgia risponde su WhatsApp alle 3 di notte</li>
+        <li>Il cliente vede "N persone davanti a te" in tempo reale</li>
+        <li>Zero carta · zero code · SMS automatici a ogni cambio stato</li>
+      </ul>
+
+      <div class="r360-cta-row">
+        <a href="{{ section.settings.demo_url }}" class="r360-btn r360-btn-primary">
+          ▶ Demo in 90 secondi
+        </a>
+        <a href="{{ section.settings.partner_url }}" class="r360-btn r360-btn-outline">
+          Attiva gratis · 14 giorni →
+        </a>
+      </div>
+
+      {% if section.settings.show_stats %}
+      <div class="r360-stats">
+        <div><strong>3.815</strong><span>Clienti nel CRM</span></div>
+        <div><strong>47.737</strong><span>Righe listino prezzi</span></div>
+        <div><strong>28 min</strong><span>Riparazione media</span></div>
+        <div><strong>14 gg</strong><span>Gratis per iniziare</span></div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Device mockups rendered client-side via repair360.js -->
+    <div class="r360-devices" id="r360DeviceHost" data-tenant="{{ tenant }}" data-api="{{ api_base }}">
+      <!-- JS fills floating phone/ipad/mac mockups -->
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="r360-how">
+    <div class="r360-inner">
+      <div class="r360-eyebrow">Come funziona</div>
+      <h2 class="r360-h2">Da zero a produttivo <em>in 10 minuti.</em></h2>
+      <div class="r360-steps">
+        {% for step in section.settings.steps %}
+          <div class="r360-step">
+            <div class="r360-step-num">{{ forloop.index }}</div>
+            <h4>{{ step.title }}</h4>
+            <p>{{ step.description }}</p>
+          </div>
+        {% else %}
+          <div class="r360-step"><div class="r360-step-num">1</div><h4>Numero · OTP · dentro</h4><p>SMS Telnyx brandizzato. 30 secondi. Niente password.</p><code>POST /api/app-auth · Telnyx</code></div>
+          <div class="r360-step"><div class="r360-step-num">2</div><h4>Preventivo bloccato poi sbloccato</h4><p>Marca → modello → guasto. Il prezzo appare solo dopo l'OTP. "A partire da" — MAI esatto.</p><code>POST /api/preventivi/calcola</code></div>
+          <div class="r360-step"><div class="r360-step-num">3</div><h4>Ticket PT o WT · coda live</h4><p>Priority precede Walk-in. TV aggiornata ogni 10s.</p><code>GET /api/queue-display</code></div>
+          <div class="r360-step"><div class="r360-step-num">4</div><h4>Pronto → SMS automatico</h4><p>Ogni cambio stato manda SMS e WhatsApp. Il cliente non chiama più.</p><code>waipro_notifications · n8n</code></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 7 MODULES -->
+  <div class="r360-mods r360-inner">
+    <div class="r360-eyebrow">Cosa è stato costruito per {{ shop.name }}</div>
+    <h2 class="r360-h2">7 moduli · <em>un sistema.</em></h2>
+    <div class="r360-mod-grid">
+      <a href="{{ section.settings.demo_url }}" class="r360-mod">
+        <div class="r360-mod-thumb r360-thumb-dark"><span class="r360-mod-tag r360-tag-demo">Demo</span>▶<small>1:25 · auto-play</small></div>
+        <div class="r360-mod-body"><h3>Demo narrata · 90s</h3><p>Tour completo con capitoli e narrazione. Converte il cliente nel pitch.</p></div>
+      </a>
+      <a href="/pages/app" class="r360-mod">
+        <div class="r360-mod-thumb r360-thumb-warm"><span class="r360-mod-tag r360-tag-demo">PWA</span>📱<small>OTP → ticket → tracking</small></div>
+        <div class="r360-mod-body"><h3>App cliente PWA</h3><p>Wizard 8 step · ticket PT/WT · coda live · notifiche auto.</p></div>
+      </a>
+      <a href="/pages/gestionale" class="r360-mod">
+        <div class="r360-mod-thumb r360-thumb-blue"><span class="r360-mod-tag r360-tag-ops">Gestionale</span>🔧<small>4 tab · 6 stati · real-time</small></div>
+        <div class="r360-mod-body"><h3>Repair360 Gestionale</h3><p>Operativo / Clienti / Lab / Cal. Notifiche auto a ogni cambio.</p></div>
+      </a>
+      <a href="/pages/vetrina360" class="r360-mod">
+        <div class="r360-mod-thumb r360-thumb-red"><span class="r360-mod-tag" style="background:rgba(255,255,255,.25);color:#fff">Signage</span>📺<small>Yodeck · spot · TTS</small></div>
+        <div class="r360-mod-body"><h3>Vetrina360 · Yodeck</h3><p>Display TV per coda, spot YouTube, ticker, radio, voce sintetica.</p></div>
+      </a>
+      <a href="{{ section.settings.partner_url }}" class="r360-mod">
+        <div class="r360-mod-thumb r360-thumb-orange"><span class="r360-mod-tag r360-tag-demo">Onboarding</span>🤝<small>GMB → 4 step → live</small></div>
+        <div class="r360-mod-body"><h3>Diventa Partner</h3><p>Google My Business auto-fill · servizi Booking-style · promo 90€/anno.</p></div>
+      </a>
+      <a href="/pages/journey" class="r360-mod">
+        <div class="r360-mod-thumb r360-thumb-green"><span class="r360-mod-tag r360-tag-live">Live</span>🗺<small>7 tappe · 3 percorsi</small></div>
+        <div class="r360-mod-body"><h3>Customer Journey Map</h3><p>7 tappe × 3 percorsi · link live · stampa PDF.</p></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- PARTNER PITCH -->
+  <div class="r360-pitch-wrap">
+    <div class="r360-pitch r360-inner">
+      <div class="r360-pitch-head">
+        <div>
+          <div class="r360-eyebrow r360-eye-light">Per chi è Repair360</div>
+          <h2 class="r360-h2 r360-h2-light">Tre scenari · <em>un sistema.</em></h2>
+          <p class="r360-pitch-sub">PMI singola, catena, flotta B2B. Parti in 10 minuti.</p>
+        </div>
+        <div class="r360-price-box">
+          <div class="r360-price-tag">⚡ Solo oggi</div>
+          <div class="r360-price-name">Piano PMI</div>
+          <div class="r360-price-val">90€ <del>348€</del></div>
+          <div class="r360-price-period">primo anno · poi 29€/mese</div>
+          <div class="r360-price-note">✓ Bloccato entro la prova</div>
+        </div>
+      </div>
+      <div class="r360-scenarios">
+        <div class="r360-sc"><div class="r360-sc-ico">🔧</div><h4>PMI · officina singola</h4><p>Marco gestisce tutto. Giorgia di notte. Coda da sola.</p></div>
+        <div class="r360-sc"><div class="r360-sc-ico">🏪</div><h4>Catena multi-sede</h4><p>10 negozi, un cruscotto. Multi-tenant, RBAC, report centrale.</p></div>
+        <div class="r360-sc"><div class="r360-sc-ico">⚡</div><h4>Energia &amp; flotte B2B</h4><p>SLA garantito. White-label. Fatturazione centralizzata.</p></div>
+      </div>
+      <div class="r360-cta-row">
+        <a href="{{ section.settings.partner_url }}" class="r360-btn r360-btn-primary">🤝 Attiva il tuo negozio — gratis</a>
+        <a href="{{ section.settings.demo_url }}" class="r360-btn r360-btn-ghost">▶ Vedi prima la demo</a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+// Minimal client-side init for tenant-aware queue polling
+(function(){
+  const host = document.getElementById('r360DeviceHost');
+  if (!host) return;
+  const tenant = host.dataset.tenant || 'mrphone';
+  const api = host.dataset.api || 'https://api.riparasubito.tech';
+  // Device overlay handlers (full JS in repair360.js asset)
+  host.innerHTML = '<div class="r360-dev-hint">Caricamento device...</div>';
+  // Note: full floating device JS loaded via {{ \'repair360.js\' | asset_url | script_tag }}
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Repair360 Hub",
+  "tag": "section",
+  "class": "r360-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "hero_headline",
+      "label": "Titolo hero",
+      "default": "Il negozio che non si ferma mai."
+    },
+    {
+      "type": "textarea",
+      "id": "hero_sub",
+      "label": "Sottotitolo hero",
+      "default": "Coda digitale. Gestionale. WhatsApp AI. Signage TV."
+    },
+    {
+      "type": "text",
+      "id": "tenant_id",
+      "label": "Tenant ID",
+      "default": "mrphone",
+      "info": "Sostituisce shop.metafields.repair360.tenant_id se non impostato"
+    },
+    {
+      "type": "url",
+      "id": "api_base",
+      "label": "API base URL",
+      "info": "Default: https://api.riparasubito.tech"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "Mostra statistiche",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "partner_url",
+      "label": "URL pagina Partner",
+      "default": "/pages/partner"
+    },
+    {
+      "type": "url",
+      "id": "demo_url",
+      "label": "URL pagina Demo",
+      "default": "/pages/demo"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Repair360 Hub default"
+    }
+  ]
+}
+{% endschema %}

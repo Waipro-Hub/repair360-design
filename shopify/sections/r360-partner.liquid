@@ -1,0 +1,297 @@
+{% comment %}
+  r360-partner.liquid — Partner Onboarding Section
+  Shopify: sections/r360-partner.liquid
+{% endcomment %}
+
+{% assign tenant = shop.metafields.repair360.tenant_id.value | default: section.settings.tenant_id %}
+{% assign api_base = shop.metafields.repair360.api_base.value | default: 'https://api.riparasubito.tech' %}
+{% assign trial_days = section.settings.trial_days | default: 14 %}
+{% assign promo_price = section.settings.promo_annual_price | default: 90 %}
+
+{{ 'repair360.css' | asset_url | stylesheet_tag }}
+
+<section class="r360-partner" id="r360-partner-{{ section.id }}" data-tenant="{{ tenant }}" data-api="{{ api_base }}">
+
+  <div class="r360-partner-shell">
+    <!-- SIDEBAR (desktop) -->
+    <aside class="r360-sidebar" id="r360Sidebar">
+      <a href="/" class="r360-sidebar-logo">
+        <div class="r360-logo-icon">
+          {{ 'logo.svg' | asset_url | img_tag: shop.name, 'r360-logo-img' }}
+        </div>
+        <span class="r360-logo-word">{{ shop.name }}</span>
+      </a>
+      <nav class="r360-step-nav" id="r360StepNav" aria-label="Passi onboarding">
+        <!-- Built by JS -->
+      </nav>
+      <p class="r360-sidebar-note">Piano Starter · {{ trial_days }} giorni gratuiti<br>Poi 29€/mese · cancella quando vuoi</p>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="r360-partner-main">
+      <!-- STEP 0: search business -->
+      <div class="r360-step-pane active" id="r360-s0">
+        <div class="r360-gmb-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Ti abbiamo già riconosciuto da Google
+        </div>
+        <h1 class="r360-partner-h1">Iniziamo!</h1>
+        <p class="r360-partner-sub">Scrivi il nome della tua attività. Useremo Google My Business per compilare il resto.</p>
+        <div class="r360-search-bar">
+          <input type="text" id="r360BizName" placeholder="Cerca il nome del tuo business" autocomplete="organization" aria-label="Nome attività"/>
+          <button onclick="r360Next()" aria-label="Cerca">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+        <div id="r360GmbResults" class="r360-gmb-results" role="listbox" aria-label="Risultati Google My Business"></div>
+        <div class="r360-chips" id="r360TypeChips">
+          <button class="r360-chip active" data-val="REPAIR_ONLY">🔧 Riparazioni</button>
+          <button class="r360-chip" data-val="MULTIPHONE">📱 Multi-telefonia</button>
+          <button class="r360-chip" data-val="REPAIR_BACKOFFICE">🏭 Lab B2B</button>
+        </div>
+        <!-- KPI proof -->
+        <div class="r360-kpi-bar">
+          <div><strong>3.815</strong><span>Clienti CRM</span></div>
+          <div><strong>4.931</strong><span>Fatture emesse</span></div>
+          <div><strong>28 min</strong><span>Riparazione media</span></div>
+          <div><strong>0€</strong><span>Per {{ trial_days }} giorni</span></div>
+        </div>
+        <button class="r360-cta-primary r360-cta-orange" id="r360S0Cta" onclick="r360Next()" disabled>
+          Continua veloce
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+      <!-- STEP 1: tipo attività + multiservice -->
+      <div class="r360-step-pane" id="r360-s1">
+        <p class="r360-step-eyebrow">Passo 1 di 4</p>
+        <h1 class="r360-partner-h1">Che tipo di <em>attività hai?</em></h1>
+        <div class="r360-type-grid" id="r360TypeGrid">
+          <button class="r360-type-card" onclick="r360SelectType('REPAIR_ONLY',this)">
+            <span class="r360-type-ico">🔧</span>
+            <strong>Solo riparazioni</strong>
+            <span>Riparazioni device · laboratorio</span>
+          </button>
+          <button class="r360-type-card" onclick="r360SelectType('MULTIPHONE',this)">
+            <span class="r360-type-ico">📱</span>
+            <strong>Negozio completo</strong>
+            <span>Riparazioni + vendita + SIM</span>
+          </button>
+          <button class="r360-type-card" onclick="r360SelectType('REPAIR_BACKOFFICE',this)">
+            <span class="r360-type-ico">🏭</span>
+            <strong>Lab B2B</strong>
+            <span>Conto terzi · flotte aziendali</span>
+          </button>
+        </div>
+        <!-- Multiservice questionnaire (revealed after type) -->
+        <div id="r360Services" style="display:none">
+          <p class="r360-sec-label">Quali servizi vuoi offrire?</p>
+          <div class="r360-svc-chips" id="r360SvcChips"></div>
+          <p class="r360-sec-label" style="margin-top:18px">Cosa hai già attivo?</p>
+          <div class="r360-svc-chips" id="r360HaveChips"></div>
+        </div>
+        <button class="r360-cta-primary" id="r360S1Cta" onclick="r360Next()" disabled>Avanti →</button>
+        <button class="r360-cta-back" onclick="r360GoTo(0)">← Indietro</button>
+      </div>
+
+      <!-- STEP 2: dati centro -->
+      <div class="r360-step-pane" id="r360-s2">
+        <p class="r360-step-eyebrow">Passo 2 di 4 · Dove sei</p>
+        <h1 class="r360-partner-h1">Dove si trova <em>il tuo centro?</em></h1>
+        <div id="r360GmbConfirm" class="r360-gmb-confirm" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Dati confermati da <strong>Google My Business</strong>
+        </div>
+        <div class="r360-form-grid">
+          <div class="r360-field r360-full"><label>Nome del centro</label><input type="text" id="r360Nome" placeholder="es. MrPhone" oninput="r360CheckS2()"/></div>
+          <div class="r360-field r360-full"><label>Indirizzo</label><input type="text" id="r360Indirizzo" placeholder="es. Via Roma 14"/></div>
+          <div class="r360-field"><label>Città</label><input type="text" id="r360Citta" placeholder="es. Roma" oninput="r360CheckS2()"/></div>
+          <div class="r360-field"><label>WhatsApp Business</label><input type="tel" id="r360Wa" placeholder="+39 ..."/></div>
+          <div class="r360-field r360-full"><label>Email titolare</label><input type="email" id="r360Email" placeholder="marco@esempio.it" oninput="r360CheckS2()"/></div>
+        </div>
+        <button class="r360-cta-primary" id="r360S2Cta" onclick="r360Next()" disabled>Continua →</button>
+        <button class="r360-cta-back" onclick="r360GoTo(1)">← Indietro</button>
+      </div>
+
+      <!-- STEP 3: piano -->
+      <div class="r360-step-pane" id="r360-s3">
+        <p class="r360-step-eyebrow">Passo 3 di 4 · Piano</p>
+        <h1 class="r360-partner-h1">Quanto vale <em>il tuo tempo?</em></h1>
+        <p class="r360-partner-sub">Parti gratis. Aggiorna quando vuoi. Nessun contratto.</p>
+        <div class="r360-plan-grid">
+          <button class="r360-plan-card selected" id="planStarter" onclick="r360SelectPlan('starter',this)">
+            <div class="r360-plan-tag">{{ trial_days }} giorni gratis</div>
+            <div class="r360-plan-name">Starter</div>
+            <div class="r360-plan-price">0€ <span>/mese</span></div>
+            <div class="r360-plan-desc">Prova completa · max 7 ticket/giorno</div>
+          </button>
+          <button class="r360-plan-card" id="planPmi" onclick="r360SelectPlan('pmi',this)">
+            <div class="r360-plan-tag" style="background:#16A34A">⚡ Solo oggi · {{ promo_price }}€/anno</div>
+            <div class="r360-plan-name">PMI</div>
+            <div class="r360-plan-price">{{ promo_price }}€ <del>348€</del><span>/anno</span></div>
+            <div class="r360-plan-desc">Bloccato a {{ promo_price }}€ se attivi entro la prova</div>
+          </button>
+          <button class="r360-plan-card" id="planB2b" onclick="r360SelectPlan('b2b',this)">
+            <div class="r360-plan-name">B2B / Rete</div>
+            <div class="r360-plan-price" style="font-size:20px">Su misura</div>
+            <div class="r360-plan-desc">White-label · ERP · SLA garantito</div>
+          </button>
+        </div>
+        <div class="r360-anchor-note">
+          ⏳ Hai <strong>{{ trial_days }} giorni</strong> per decidere. Se attivi PMI entro la prova, blocchi <strong>{{ promo_price }}€ per tutto il primo anno</strong>.
+        </div>
+        <button class="r360-cta-primary r360-cta-orange" id="r360S3Cta" onclick="r360Activate()">
+          <span id="r360S3Label">Attiva Piano Starter — gratis</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <button class="r360-cta-back" onclick="r360GoTo(2)">← Indietro</button>
+      </div>
+
+      <!-- STEP 4: welcome -->
+      <div class="r360-step-pane" id="r360-s4">
+        <div class="r360-welcome-icon">✓</div>
+        <p class="r360-step-eyebrow">Benvenuto!</p>
+        <h1 class="r360-partner-h1">Sei dentro, <em id="r360WelcomeName">Marco</em>!</h1>
+        <p class="r360-partner-sub" id="r360WelcomeMsg">{{ shop.name }} è attivo su Repair360. Giorgia risponde già ai clienti su WhatsApp.</p>
+        <div class="r360-welcome-cta">
+          <a href="/pages/gestionale" class="r360-cta-primary r360-cta-orange">Apri il gestionale →</a>
+          <a href="/pages/app" class="r360-cta-outline">📱 App cliente</a>
+        </div>
+        <div class="r360-gaps">
+          <p class="r360-gaps-title">⚠️ Da completare prima del go-live</p>
+          <div class="r360-gap-row"><span class="r360-gap-num">01</span>Fix localStorage key · 2h</div>
+          <div class="r360-gap-row"><span class="r360-gap-num">02</span>Deposito PT Shopify · 6-8h</div>
+          <div class="r360-gap-row"><span class="r360-gap-num">03</span>Collaudo Giorgia +39 075 3690089 · 2-4h</div>
+          <div class="r360-gap-row"><span class="r360-gap-num">04</span>Garanzia uniforme 12 mesi · 1h</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</section>
+
+<script>
+// Repair360 Partner Onboarding — inline JS
+// Production: extract to assets/repair360-partner.js
+(function(){
+  const STATE = { step:0, type:'REPAIR_ONLY', plan:'starter', services:[], have:[] };
+  const STEP_LABELS = ['Inizia','Tipo attività','Dati centro','Piano','Benvenuto ✓'];
+  const GMB_DEMO = [
+    {name:'MrPhone Via Roma 14',addr:'Via Roma 14, Perugia',city:'Perugia',type:'REPAIR_ONLY',wa:'+39 075 3690089'},
+    {name:'TEC Electronics',addr:'Corso Italia 22, Perugia',city:'Perugia',type:'MULTIPHONE'},
+  ];
+  const SVC = {
+    REPAIR_ONLY:['🎟 Coda PT/WT','💬 AI WhatsApp','📡 Tracking SMS','💶 Preventivo online','📺 Vetrina360'],
+    MULTIPHONE:['🎟 Coda PT/WT','💬 AI WhatsApp','📡 Tracking SMS','💶 Preventivo online','📱 Attivazioni SIM','🛍 Catalogo usato','📺 Vetrina360'],
+    REPAIR_BACKOFFICE:['📡 Tracking SLA','🧾 Fatturazione B2B','📅 Google Calendar','💬 Sonia B2B bot','📺 Vetrina360'],
+  };
+  const HAVE = ['📍 Google My Business','💬 WhatsApp Business','📸 Instagram','🛒 Shopify','📆 Prenotazioni','🖥 Gestionale'];
+
+  function buildNav(){
+    const sb=document.getElementById('r360StepNav');
+    if(!sb)return;
+    sb.innerHTML=STEP_LABELS.map((l,i)=>`<button class="r360-step-btn${i===STATE.step?' active':i<STATE.step?' done':''}" onclick="r360GoTo(${i})" ${i>STATE.step?'disabled':''}><span class="r360-step-dot">${i<STATE.step?'✓':i+1}</span><span>${l}</span></button>`).join('');
+  }
+  window.r360GoTo=function(n){
+    document.querySelectorAll('.r360-step-pane').forEach((p,i)=>p.classList.toggle('active',i===n));
+    STATE.step=n; buildNav();
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  window.r360Next=function(){ r360GoTo(Math.min(STATE.step+1,4)); };
+
+  // GMB search
+  const bizInput=document.getElementById('r360BizName');
+  if(bizInput){
+    bizInput.addEventListener('input',function(){
+      const q=this.value.trim().toLowerCase();
+      const cta=document.getElementById('r360S0Cta');
+      if(cta) cta.disabled=q.length<2;
+      const res=document.getElementById('r360GmbResults');
+      if(!res)return;
+      if(q.length<2){res.style.display='none';return;}
+      const matches=GMB_DEMO.filter(b=>b.name.toLowerCase().includes(q)||b.city.toLowerCase().includes(q));
+      if(!matches.length){res.style.display='none';return;}
+      res.style.display='block';
+      res.innerHTML=matches.map(b=>`<button class="r360-gmb-item" onclick="r360SelectGmb(${JSON.stringify(b).replace(/"/g,'&quot;')})"><strong>${b.name}</strong><span>${b.addr}</span></button>`).join('');
+    });
+  }
+  window.r360SelectGmb=function(b){
+    const bi=document.getElementById('r360BizName');if(bi)bi.value=b.name;
+    const res=document.getElementById('r360GmbResults');if(res)res.style.display='none';
+    STATE.type=b.type||'REPAIR_ONLY';
+    setTimeout(()=>{
+      const conf=document.getElementById('r360GmbConfirm');if(conf)conf.style.display='flex';
+      const fill=(id,v)=>{const el=document.getElementById(id);if(el){el.value=v;el.style.borderColor='#16A34A';}};
+      fill('r360Nome',b.name);fill('r360Indirizzo',b.addr.split(',')[0]);fill('r360Citta',b.city);
+      if(b.wa)fill('r360Wa',b.wa);
+      r360CheckS2();
+    },50);
+    r360GoTo(2);
+  };
+
+  window.r360SelectType=function(val,el){
+    document.querySelectorAll('.r360-type-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected'); STATE.type=val;
+    const panel=document.getElementById('r360Services');
+    if(panel){panel.style.display='block'; buildSvcChips(val);}
+    const cta=document.getElementById('r360S1Cta');if(cta)cta.disabled=false;
+  };
+
+  function buildSvcChips(type){
+    const el=document.getElementById('r360SvcChips');
+    if(!el)return;
+    const list=SVC[type]||SVC.REPAIR_ONLY;
+    el.innerHTML=list.map((s,i)=>`<button class="r360-svc-chip${i<3?' active':''}" onclick="this.classList.toggle('active')">${s}</button>`).join('');
+    const hel=document.getElementById('r360HaveChips');
+    if(hel) hel.innerHTML=HAVE.map(s=>`<button class="r360-svc-chip" onclick="this.classList.toggle('active')">${s}</button>`).join('');
+  }
+
+  window.r360CheckS2=function(){
+    const nome=document.getElementById('r360Nome');
+    const citta=document.getElementById('r360Citta');
+    const email=document.getElementById('r360Email');
+    const cta=document.getElementById('r360S2Cta');
+    if(cta) cta.disabled=!(nome&&nome.value.trim()&&citta&&citta.value.trim()&&email&&email.value.includes('@'));
+  };
+
+  window.r360SelectPlan=function(val,el){
+    document.querySelectorAll('.r360-plan-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected'); STATE.plan=val;
+    const lbl={'starter':'Attiva Piano Starter — gratis','pmi':'Blocca PMI — {{ promo_price }}€ il primo anno','b2b':'Richiedi Piano B2B'};
+    const s=document.getElementById('r360S3Label');if(s)s.textContent=lbl[val]||lbl.starter;
+  };
+
+  window.r360Activate=function(){
+    const btn=document.getElementById('r360S3Cta');
+    if(btn){btn.disabled=true; const s=document.getElementById('r360S3Label');if(s)s.textContent='Attivazione in corso...';}
+    // Production: POST to /api/partner/apply?tenant={{ tenant }}
+    setTimeout(()=>{
+      const nome=document.getElementById('r360Nome');
+      const wn=document.getElementById('r360WelcomeName');
+      const wm=document.getElementById('r360WelcomeMsg');
+      if(wn&&nome)wn.textContent=(nome.value||'Marco').split(' ')[0];
+      if(wm&&nome)wm.textContent=(nome.value||'{{ shop.name }}')+' è attivo su Repair360. Giorgia risponde già ai clienti su WhatsApp.';
+      r360GoTo(4);
+    },1400);
+  };
+
+  buildNav();
+  // enable S0 CTA on initial render
+  const s0cta=document.getElementById('r360S0Cta');
+  if(s0cta){ document.getElementById('r360BizName').addEventListener('input',()=>{s0cta.disabled=document.getElementById('r360BizName').value.trim().length<2;}); }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Repair360 Partner Onboarding",
+  "settings": [
+    {"type": "text","id": "tenant_id","label": "Tenant ID","default": "mrphone"},
+    {"type": "number","id": "trial_days","label": "Giorni di prova","default": 14},
+    {"type": "number","id": "promo_annual_price","label": "Prezzo promo annuale (€)","default": 90},
+    {"type": "number","id": "promo_monthly_price","label": "Prezzo mensile standard (€)","default": 29},
+    {"type": "checkbox","id": "show_gmb_lookup","label": "Mostra ricerca Google My Business","default": true}
+  ],
+  "presets": [{"name": "Repair360 Partner Onboarding"}]
+}
+{% endschema %}

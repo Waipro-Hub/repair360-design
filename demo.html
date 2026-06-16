@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Demo Live · Repair360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#DC2626;--ink:#0F172A;--mute:#64748B;--line:#E8ECF2}
+body{font-family:Inter,system-ui,sans-serif;background:#F1F5F9;color:var(--ink);-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden}
+
+/* STAGE */
+.stage{height:100vh;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.demo-top{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;z-index:10}
+.dt-logo{display:flex;align-items:center;gap:9px}
+.dt-logo-box{width:30px;height:30px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center}
+.dt-logo-text{font-weight:900;font-size:15px;letter-spacing:-.02em}
+.dt-logo-text span{color:var(--red)}
+.dt-badge{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--red);padding:4px 12px;border-radius:100px;background:#FEF2F2;border:1px solid #FECACA}
+.dt-badge .rec{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.dt-actions{display:flex;gap:8px;align-items:center}
+.dt-btn{padding:7px 14px;border-radius:9px;border:none;font-family:inherit;font-size:12.5px;font-weight:800;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.dt-btn-ghost{background:#F1F5F9;color:var(--mute)}
+.dt-btn-ghost:hover{background:#E2E8F0;color:var(--ink)}
+.dt-btn-red{background:var(--red);color:#fff}
+
+/* BODY */
+.demo-body{flex:1;display:grid;grid-template-columns:340px 1fr;overflow:hidden}
+@media(max-width:860px){.demo-body{grid-template-columns:1fr}.demo-narration{display:none}}
+
+/* NARRATION PANEL */
+.demo-narration{background:#0F172A;color:#fff;padding:32px 28px;display:flex;flex-direction:column;overflow-y:auto}
+.narr-chapter-num{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px}
+.narr-title{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:14px}
+.narr-title em{font-style:normal;color:#F87171}
+.narr-caption{font-size:15px;color:rgba(255,255,255,.65);font-weight:500;line-height:1.65;margin-bottom:24px}
+.narr-points{display:flex;flex-direction:column;gap:10px;margin-bottom:auto}
+.narr-point{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.8);opacity:.35;transition:opacity .4s ease}
+.narr-point.lit{opacity:1}
+.narr-point-dot{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;margin-top:1px;transition:background .4s ease}
+.narr-point.lit .narr-point-dot{background:#16A34A}
+
+/* CHAPTER NAV */
+.chapter-rail{display:flex;flex-direction:column;gap:3px;margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)}
+.chapter-btn{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;cursor:pointer;transition:background .15s;border:none;background:transparent;color:inherit;font-family:inherit;text-align:left;width:100%}
+.chapter-btn:hover{background:rgba(255,255,255,.05)}
+.chapter-btn.active{background:rgba(220,38,38,.15)}
+.chapter-idx{width:22px;height:22px;border-radius:6px;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5)}
+.chapter-btn.active .chapter-idx{background:var(--red);color:#fff}
+.chapter-btn.done .chapter-idx{background:#16A34A;color:#fff}
+.chapter-label{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.6)}
+.chapter-btn.active .chapter-label{color:#fff}
+
+/* SCREEN STAGE */
+.demo-screen{position:relative;display:flex;align-items:center;justify-content:center;padding:28px;overflow:hidden;background:radial-gradient(ellipse 60% 50% at 50% 30%,#fff,#F1F5F9)}
+
+/* device wrapper switches by chapter kind */
+.screen-frame{position:relative;transition:all .5s cubic-bezier(.16,1,.3,1);box-shadow:0 40px 100px rgba(15,23,42,.22)}
+/* phone */
+.frame-phone{width:340px;height:720px;max-height:88vh;border-radius:42px;border:11px solid #0F172A;background:#fff;overflow:hidden}
+.frame-phone iframe{width:100%;height:100%;border:none}
+/* desktop */
+.frame-desktop{width:min(92%,1000px);aspect-ratio:16/10;border-radius:14px;border:2px solid #0F172A;background:#0D1117;overflow:hidden;display:flex;flex-direction:column}
+.frame-desktop-bar{height:30px;background:#1A2030;display:flex;align-items:center;gap:7px;padding:0 14px;flex-shrink:0}
+.frame-desktop-bar i{width:11px;height:11px;border-radius:50%;display:block}
+.frame-desktop iframe{flex:1;width:100%;border:none}
+/* tv */
+.frame-tv{width:min(94%,960px);aspect-ratio:16/9;border-radius:12px;border:4px solid #0F172A;background:#07090F;overflow:hidden}
+.frame-tv iframe{width:100%;height:100%;border:none}
+
+.screen-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;z-index:5;transition:opacity .3s;border-radius:inherit}
+.screen-loading.hide{opacity:0;pointer-events:none}
+.spinner{width:36px;height:36px;border-radius:50%;border:4px solid #E2E8F0;border-top-color:var(--red);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* CONTROL BAR */
+.demo-controls{height:72px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px;flex-shrink:0}
+.ctrl-btn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.ctrl-play{width:52px;height:52px;background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(220,38,38,.35)}
+.ctrl-play:hover{background:#B91C1C}
+.ctrl-ghost{background:#F1F5F9;color:var(--ink)}
+.ctrl-ghost:hover{background:#E2E8F0}
+.progress-wrap{flex:1;display:flex;align-items:center;gap:14px}
+.progress-track{flex:1;height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden;cursor:pointer;position:relative}
+.progress-fill{height:100%;background:var(--red);border-radius:3px;width:0%;transition:width .3s linear}
+.progress-time{font-size:12.5px;font-weight:800;color:var(--mute);font-variant-numeric:tabular-nums;min-width:90px;text-align:right}
+.ctrl-powered{font-size:11px;font-weight:700;color:#94A3B8}
+.ctrl-powered b{color:var(--red)}
+
+/* INTRO/OUTRO overlays inside screen */
+.splash{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;z-index:8;background:radial-gradient(ellipse 70% 50% at 50% 40%,#fff,#F1F5F9)}
+.splash-icon{width:88px;height:88px;border-radius:26px;background:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 16px 40px rgba(220,38,38,.3)}
+.splash h1{font-size:clamp(32px,5vw,54px);font-weight:900;letter-spacing:-.04em;line-height:1.04;margin-bottom:16px;max-width:640px}
+.splash h1 em{font-style:normal;color:var(--red)}
+.splash p{font-size:17px;color:var(--mute);font-weight:500;max-width:480px;line-height:1.6;margin-bottom:32px}
+.splash-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.splash-btn{padding:0 30px;height:56px;border-radius:16px;font-size:16px;font-weight:800;cursor:pointer;border:none;font-family:inherit;display:inline-flex;align-items:center;gap:10px;transition:all .15s;text-decoration:none}
+.sb-red{background:var(--red);color:#fff;box-shadow:0 12px 32px rgba(220,38,38,.3)}
+.sb-red:hover{background:#B91C1C;transform:translateY(-2px)}
+.sb-ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.sb-ghost:hover{border-color:#CBD5E1}
+.splash.hide{display:none}
+/* TV mockup con stand */
+.tv-wrap{display:flex;flex-direction:column;align-items:center;width:min(92%,900px)}
+.tv-bezel{width:100%;background:#1C1C1E;border-radius:10px 10px 0 0;border:7px solid #2A2A2C;overflow:hidden;box-shadow:0 0 0 2px #111,0 30px 90px rgba(0,0,0,.7)}
+.tv-inner{aspect-ratio:16/9;position:relative;overflow:hidden;background:#07090F}
+.tv-inner iframe,.tv-inner .screen-loading{position:absolute;inset:0;width:100%;height:100%;border:none}
+.tv-bar{height:24px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.tv-bar-logo{font-size:9px;font-weight:900;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.tv-bar-live{width:7px;height:7px;border-radius:50%;background:#10B981;animation:blink 1.4s infinite}
+.tv-bar-info{font-size:8px;color:rgba(255,255,255,.18);font-weight:700}
+.tv-neck{width:90px;height:42px;background:linear-gradient(to bottom,#2A2A2C,#181818);margin:0 auto;clip-path:polygon(20% 0,80% 0,100% 100%,0% 100%)}
+.tv-base{width:280px;height:10px;background:#181818;border-radius:0 0 8px 8px;margin:0 auto;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- TOP -->
+  <div class="demo-top">
+    <div class="dt-logo">
+      <div class="dt-logo-box"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2.5"/></svg></div>
+      <span class="dt-logo-text">Mr<span>Phone</span></span>
+      <span class="dt-badge"><span class="rec"></span> DEMO LIVE</span>
+    </div>
+    <div class="dt-actions">
+      <a href="produzione.html" class="dt-btn dt-btn-ghost">← Hub</a>
+      <a href="index.html" class="dt-btn dt-btn-red">Prova l'app →</a>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="demo-body">
+
+    <!-- NARRATION -->
+    <div class="demo-narration">
+      <div class="narr-chapter-num" id="narrNum">Capitolo 1 / 7</div>
+      <div class="narr-title" id="narrTitle">Benvenuto</div>
+      <div class="narr-caption" id="narrCaption">Guarda come un cliente prenota, salta la fila e segue la riparazione in tempo reale.</div>
+      <div class="narr-points" id="narrPoints"></div>
+      <div class="chapter-rail" id="chapterRail"></div>
+    </div>
+
+    <!-- SCREEN -->
+    <div class="demo-screen">
+      <!-- SPLASH intro -->
+      <div class="splash" id="splash">
+        <div class="splash-icon"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="white"/></svg></div>
+        <h1>Repair360 in <em>90 secondi.</em></h1>
+        <p>La demo parte da sola: ti mostra l'intero viaggio del cliente e del negozio. Niente da installare — tutto sul cloud.</p>
+        <div class="splash-cta">
+          <button class="splash-btn sb-red" onclick="startDemo()">▶ Avvia la demo — 90 sec</button>
+          <a class="splash-btn sb-ghost" href="partner.html">🤝 Attiva il tuo negozio</a>
+        </div>
+        <p style="margin-top:18px;font-size:12px;color:#94A3B8;font-weight:600">8 capitoli · nessun download · tutto sul cloud</p>
+      </div>
+
+      <!-- DEVICE FRAME (filled by JS) -->
+      <div id="frameHost"></div>
+    </div>
+
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="demo-controls">
+    <button class="ctrl-btn ctrl-play" id="playBtn" onclick="togglePlay()" title="Play/Pausa">
+      <svg id="playIcon" width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+    </button>
+    <button class="ctrl-btn ctrl-ghost" onclick="restartDemo()" title="Ricomincia">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+    </button>
+    <div class="progress-wrap">
+      <div class="progress-track" id="progressTrack" onclick="seekTo(event)"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-time" id="progressTime">0:00 / 1:30</span>
+    </div>
+    <span class="ctrl-powered">powered <b>RiparaSubito.tech</b></span>
+  </div>
+
+</div>
+
+<script>
+// ── Chapters: each drives a real screen ──
+const CH = [
+  {
+    label:'Nuovo cliente', kind:'phone', dur:12,
+    state:{screen:'login',data:{isExisting:false,verified:false,phone:''}},
+    title:'Trenta secondi. <em>Sei dentro.</em>',
+    caption:'Anna non ha mai riparato nulla qui. Inserisce il numero. Un SMS. Un secondo dopo è cliente. Nessun form, nessuna password, nessun account da ricordare.',
+    points:['Il numero = la tua identità, nient\'altro','OTP brandizzato MrPhone · SMS via Telnyx','I tuoi dati ti ritroverai al prossimo accesso'],
+  },
+  {
+    label:'Home cliente', kind:'phone', dur:11,
+    state:{screen:'home',data:{isExisting:true,verified:true,customer:null}},
+    title:'La macchina <em>si ricorda di te.</em>',
+    caption:'Mario torna. L\'app lo riconosce subito. Vede la riparazione in corso, quante persone ha davanti, lo storico. Zero "mi dica lei", zero attese.',
+    points:['Riparazione attiva sempre in primo piano','"2 persone davanti" · aggiornato live','Storico · senza mai riscrivere nulla'],
+  },
+  {
+    label:'Preventivo', kind:'phone', dur:13,
+    state:{screen:'wizard',data:{isExisting:true,verified:true,phone:'333 1234567'}},
+    title:'Il prezzo esiste. <em>Ma lo vedi dopo.</em>',
+    caption:'Marca, modello, guasto. Tre tap. Il cliente arriva alla porta del prezzo — ma il prezzo è chiuso a chiave. Si apre solo dopo il numero. Questo è il gate che converte.',
+    points:['Telefono PRIMA del prezzo · sempre','Loghi grigi → colore al tocco · brand vivo','"Non trovo il modello?" ha sempre una risposta'],
+  },
+  {
+    label:'Prezzo sbloccato', kind:'phone', dur:12,
+    state:{screen:'pricegate',data:{isExisting:true,verified:true,quote:{brand:'apple',model:'iPhone 14 Pro',problem:'schermo',tier:'premium',online:true}}},
+    title:'Prezzo onesto. <em>Detto subito.</em>',
+    caption:'"A partire da 49€." Mai un numero gonfiato, mai una sorpresa al ritiro. La leva: prenoti online e non paghi i 15€ di gestione. Il cliente sceglie come fosse al supermercato.',
+    points:['"A partire da" — MAI esatto · mai una trappola','Leva -15€ online · il cliente si sente premiato','Buono · Meglio · Ottimo con "Spiegami"'],
+  },
+  {
+    label:'Coda Vetrina360', kind:'tv', dur:14,
+    state:{screen:'queue',data:{}},
+    title:'La coda <em>si gestisce da sola.</em>',
+    caption:'Il monitor in negozio chiama i numeri come alle Poste. Priority prima dei Walk-in, in automatico. A destra: spot, video del partner, ticker. Il cliente sa quando tocca a lui — e smette di venire al banco.',
+    points:['PT precede WT · zero discussioni al banco','Vetrina360: spot + YouTube + ticker animato','Tocca il numero grande → annuncio vocale'],
+  },
+  {
+    label:'Repair360', kind:'desktop', dur:13, src:'journey.html#gestionale',
+    title:'Marco aggiorna uno stato. <em>Fine.</em>',
+    caption:'Un click. "In lavorazione." Il cliente riceve il messaggio in automatico. Marco non spiega niente, non chiama nessuno. Il sistema lavora per lui — su PC, tablet, telefono. Lo stesso schermo.',
+    points:['4 viste in un colpo d\'occhio · zero formazione','Cambia stato → SMS + WA automatico istantaneo','Riconosce il cliente dal numero · sempre'],
+  },
+  {
+    label:'Giorgia AI', kind:'desktop', dur:12, src:'journey.html#giorgia',
+    title:'Alle 3 di notte <em>Giorgia risponde.</em>',
+    caption:'Un cliente vuole un preventivo su WhatsApp alle 23:47. Giorgia risponde in 8 secondi, calcola il prezzo dalla stessa fonte del gestionale, prenota il posto in coda. Tu stai dormendo.',
+    points:['WhatsApp Business 24h · WABA · Telnyx','Calcola dal listino reale · 47.737 righe','Lead nel CRM · pronto quando apri al mattino'],
+  },
+  {
+    label:'Tracking', kind:'phone', dur:11,
+    state:{screen:'repair',data:{isExisting:true,verified:true,ticket:{code:'PT-014',type:'PT',ahead:2,status:'in_lavorazione',device:'Apple iPhone 14 Pro',problem:'Schermo'}}},
+    title:'Il cliente <em>non ti chiama più.</em>',
+    caption:'Ricevuto. Diagnosi. In lavorazione. Pronto. A ogni passo: un SMS, un WhatsApp. Il cliente guarda lo schermo invece di venire al banco. Le telefonate calano del 60%.',
+    points:['Stato live · aggiornato in tempo reale','SMS + WA a ogni cambio · senza fare niente','-60% telefonate · -40% passaggi al banco'],
+  },
+];
+
+const STORE_KEY = 'mrphone_demo_state';
+let cur = -1, playing = false, tick = null, elapsed = 0, chElapsed = 0;
+const TOTAL = CH.reduce((s,c)=>s+c.dur,0);
+const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+// build chapter rail
+function buildRail(){
+  document.getElementById('chapterRail').innerHTML = CH.map((c,i)=>
+    `<button class="chapter-btn" id="chBtn${i}" onclick="goChapter(${i})">
+      <span class="chapter-idx">${i+1}</span>
+      <span class="chapter-label">${c.label}</span>
+    </button>`).join('');
+}
+buildRail();
+
+function frameHTML(c){
+  if(c.kind==='phone') return `<div class="screen-frame frame-phone"><div class="screen-loading" id="scLoad"><div class="spinner"></div></div><iframe id="scFrame"></iframe></div>`;
+  if(c.kind==='tv') return `<div class="tv-wrap"><div class="tv-bezel"><div class="tv-inner"><div class="screen-loading" id="scLoad"><div class="spinner"></div></div><iframe id="scFrame"></iframe></div><div class="tv-bar"><div class="tv-bar-logo"><span class="tv-bar-live"></span>MrPhone · Vetrina360 · LIVE</div><div class="tv-bar-info">Yodeck Digital Signage · PT precede WT</div></div></div><div class="tv-neck"></div><div class="tv-base"></div></div>`;
+  return `<div class="screen-frame frame-desktop"><div class="frame-desktop-bar"><i style="background:#EF4444"></i><i style="background:#F59E0B"></i><i style="background:#10B981"></i></div><div style="position:relative;flex:1"><div class="screen-loading" id="scLoad"><div class="spinner"></div></div><iframe id="scFrame"></iframe></div></div>`;
+}
+
+function loadChapter(i){
+  cur = i; chElapsed = 0;
+  const c = CH[i];
+  // narration
+  document.getElementById('narrNum').textContent = `Capitolo ${i+1} / ${CH.length}`;
+  document.getElementById('narrTitle').innerHTML = c.title;
+  document.getElementById('narrCaption').textContent = c.caption;
+  document.getElementById('narrPoints').innerHTML = c.points.map((p,k)=>
+    `<div class="narr-point" id="np${k}"><span class="narr-point-dot">${k+1}</span>${p}</div>`).join('');
+  // rail state
+  CH.forEach((_,k)=>{
+    const b=document.getElementById('chBtn'+k);
+    b.classList.toggle('active',k===i);
+    b.classList.toggle('done',k<i);
+  });
+  // frame
+  document.getElementById('frameHost').innerHTML = frameHTML(c);
+  const frame = document.getElementById('scFrame');
+  const load = document.getElementById('scLoad');
+  // set state for app screens
+  if(c.state){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(c.state)); }catch(e){}
+    frame.src = 'index.html#demo';
+  } else {
+    frame.src = c.src;
+  }
+  frame.onload = ()=>{ setTimeout(()=>load && load.classList.add('hide'), 400); };
+  // light up points progressively
+  c.points.forEach((_,k)=> setTimeout(()=>{ const el=document.getElementById('np'+k); if(el)el.classList.add('lit'); }, (k+1)*(c.dur*1000/(c.points.length+1))));
+}
+
+function goChapter(i){
+  document.getElementById('splash').classList.add('hide');
+  // recompute elapsed up to chapter start
+  elapsed = CH.slice(0,i).reduce((s,c)=>s+c.dur,0);
+  loadChapter(i);
+  if(!playing) play();
+  updateProgress();
+}
+
+function startDemo(){ goChapter(0); }
+function restartDemo(){ elapsed=0; goChapter(0); }
+
+function play(){
+  playing = true;
+  document.getElementById('playIcon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+  if(tick) clearInterval(tick);
+  tick = setInterval(()=>{
+    elapsed += 0.25; chElapsed += 0.25;
+    if(chElapsed >= CH[cur].dur){
+      if(cur < CH.length-1){ loadChapter(cur+1); }
+      else { pause(); showOutro(); return; }
+    }
+    updateProgress();
+  }, 250);
+}
+function pause(){
+  playing = false;
+  document.getElementById('playIcon').innerHTML = '<polygon points="6 4 20 12 6 20 6 4"/>';
+  if(tick){ clearInterval(tick); tick=null; }
+}
+function togglePlay(){
+  if(cur===-1){ startDemo(); return; }
+  playing ? pause() : play();
+}
+
+function updateProgress(){
+  const pct = Math.min(100, (elapsed/TOTAL)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressTime').textContent = `${fmt(Math.min(elapsed,TOTAL))} / ${fmt(TOTAL)}`;
+}
+
+function seekTo(e){
+  const track = document.getElementById('progressTrack');
+  const pct = (e.clientX - track.getBoundingClientRect().left)/track.offsetWidth;
+  const target = pct*TOTAL;
+  // find chapter
+  let acc=0, idx=0;
+  for(let k=0;k<CH.length;k++){ if(target < acc+CH[k].dur){ idx=k; break; } acc+=CH[k].dur; idx=k; }
+  elapsed = target;
+  if(idx!==cur) loadChapter(idx);
+  chElapsed = target - acc;
+  updateProgress();
+}
+
+function showOutro(){
+  document.getElementById('frameHost').innerHTML = '';
+  const splash = document.getElementById('splash');
+  splash.classList.remove('hide');
+  splash.innerHTML = `
+    <div class="splash-icon" style="background:#16A34A"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h1>Questo è <em>Repair360.</em></h1>
+    <p style="max-width:520px">Niente fila, niente telefonate, niente carta. Il cliente prenota, tu lavori. Giorgia gestisce tutto il resto — anche di notte.</p>
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:16px;padding:18px 24px;margin:16px 0;text-align:left;max-width:480px">
+      <p style="font-size:14px;font-weight:800;color:#DC2626;margin-bottom:10px">⚡ Solo oggi · se attivi entro 14 giorni</p>
+      <p style="font-size:28px;font-weight:900;color:#0F172A;line-height:1;margin-bottom:4px">90€ <del style="color:#CBD5E1;font-size:16px">348€</del></p>
+      <p style="font-size:13px;color:#64748B;font-weight:600">Piano PMI bloccato per il primo anno · poi 29€/mese</p>
+    </div>
+    <div class="splash-cta">
+      <a class="splash-btn sb-red" href="partner.html" style="font-size:17px">🤝 Attiva gratis — 14 giorni</a>
+      <a class="splash-btn sb-ghost" href="index.html">📱 Prova l'app</a>
+      <button class="splash-btn sb-ghost" onclick="restartDemo()" style="font-size:14px">↺ Rivedi</button>
+    </div>
+    <p style="margin-top:16px;font-size:12px;color:#94A3B8">powered <b style="color:#DC2626">RiparaSubito.tech</b> · Telnyx · WhatsApp WABA · Shopify</p>`;
+}
+
+updateProgress();
+// auto-start after a beat so the user sees the splash
+setTimeout(()=>{ if(cur===-1 && !playing) { /* wait for click */ } }, 100);
+</script>
+</body>
+</html>

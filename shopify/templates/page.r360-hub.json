@@ -1,0 +1,18 @@
+{
+  "name": "Repair360 Hub — RiparaSubito.tech",
+  "sections": {
+    "r360-hub": {
+      "type": "r360-hub",
+      "settings": {
+        "hero_headline": "Il negozio che non si ferma mai.",
+        "hero_sub": "Coda digitale. Gestionale. WhatsApp AI. Signage TV. Tutto connesso.",
+        "tenant_id": "mrphone",
+        "api_base": "https://api.riparasubito.tech",
+        "show_stats": true,
+        "partner_url": "/pages/partner",
+        "demo_url": "/pages/demo"
+      }
+    }
+  },
+  "order": ["r360-hub"]
+}
