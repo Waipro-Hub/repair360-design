@@ -1,0 +1,55 @@
+{
+  "$comment": "Schema custom objects Twenty CRM v2.14.0 per riparasubito.tech. Riferimento per creazione via metadata API (docs.twenty.com). nameSingular/namePlural in camelCase come da convenzione Twenty.",
+  "objects": [
+    {
+      "nameSingular": "riparazione",
+      "namePlural": "riparazioni",
+      "labelSingular": "Riparazione",
+      "labelPlural": "Riparazioni",
+      "icon": "IconTool",
+      "description": "Pratica di riparazione di un device",
+      "fields": [
+        { "name": "codicePratica", "label": "Codice pratica", "type": "TEXT", "required": true, "unique": true, "example": "RIP-2026-0001" },
+        { "name": "deviceTipo", "label": "Tipo device", "type": "SELECT", "options": ["Smartphone", "Tablet", "Laptop", "Console", "Altro"] },
+        { "name": "deviceMarca", "label": "Marca", "type": "TEXT" },
+        { "name": "deviceModello", "label": "Modello", "type": "TEXT" },
+        { "name": "imeiSeriale", "label": "IMEI / Seriale", "type": "TEXT" },
+        { "name": "problemaDescrizione", "label": "Problema", "type": "TEXT", "multiline": true },
+        { "name": "stato", "label": "Stato", "type": "SELECT", "default": "Ricevuto",
+          "options": ["Ricevuto", "Diagnostica", "Preventivo Inviato", "Approvato", "In Lavorazione", "Pronto", "Consegnato", "Annullato"] },
+        { "name": "priorita", "label": "Priorità", "type": "SELECT", "default": "Normale", "options": ["Normale", "Urgente", "Express"] },
+        { "name": "preventivoBase", "label": "Preventivo base", "type": "CURRENCY", "currencyCode": "EUR" },
+        { "name": "preventivoRicambi", "label": "Preventivo ricambi", "type": "CURRENCY", "currencyCode": "EUR" },
+        { "name": "preventivoManodopera", "label": "Preventivo manodopera", "type": "CURRENCY", "currencyCode": "EUR" },
+        { "name": "preventivoTotale", "label": "Preventivo totale", "type": "NUMBER",
+          "$comment": "Twenty non ha campo formula nativo stabile: calcolare base+ricambi+manodopera via workflow/serverless o lato Pricing Wall prima dell'insert." },
+        { "name": "tecnicoAssegnato", "label": "Tecnico assegnato", "type": "RELATION", "relationType": "MANY_TO_ONE", "target": "workspaceMember" },
+        { "name": "dataRicezione", "label": "Data ricezione", "type": "DATE_TIME" },
+        { "name": "dataConsegnaStimata", "label": "Consegna stimata", "type": "DATE_TIME" },
+        { "name": "noteInterne", "label": "Note interne", "type": "TEXT", "multiline": true, "private": true },
+        { "name": "cliente", "label": "Cliente", "type": "RELATION", "relationType": "MANY_TO_ONE", "target": "person", "required": true },
+        { "name": "accettazionePreventivo", "label": "Preventivo accettato", "type": "BOOLEAN", "default": false },
+        { "name": "metodoPagamento", "label": "Metodo pagamento", "type": "SELECT", "options": ["Contanti", "Carta", "Bonifico", "Satispay"] },
+        { "name": "pagato", "label": "Pagato", "type": "BOOLEAN", "default": false }
+      ]
+    },
+    {
+      "nameSingular": "ricambio",
+      "namePlural": "ricambi",
+      "labelSingular": "Ricambio",
+      "labelPlural": "Ricambi",
+      "icon": "IconScrewdriver",
+      "description": "Componente/ricambio usato nelle riparazioni",
+      "fields": [
+        { "name": "nomeRicambio", "label": "Nome ricambio", "type": "TEXT", "required": true },
+        { "name": "codiceSku", "label": "Codice SKU", "type": "TEXT" },
+        { "name": "costoAcquisto", "label": "Costo acquisto", "type": "CURRENCY", "currencyCode": "EUR" },
+        { "name": "prezzoVendita", "label": "Prezzo vendita", "type": "CURRENCY", "currencyCode": "EUR" },
+        { "name": "quantitaMagazzino", "label": "Q.tà magazzino", "type": "NUMBER", "default": 0 },
+        { "name": "compatibilitaDevice", "label": "Compatibilità", "type": "TEXT" },
+        { "name": "fornitore", "label": "Fornitore", "type": "RELATION", "relationType": "MANY_TO_ONE", "target": "company" },
+        { "name": "riparazione", "label": "Riparazione", "type": "RELATION", "relationType": "MANY_TO_ONE", "target": "riparazione" }
+      ]
+    }
+  ]
+}

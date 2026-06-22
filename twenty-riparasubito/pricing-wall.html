@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RiparaSubito — Preventivo riparazione</title>
+<meta name="description" content="Calcola subito il preventivo della tua riparazione: diagnosi, manodopera e ricambi. Trasparente, in tempo reale." />
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<style>
+/* ===== RiparaSubito Pricing Wall — single file, no backend (anti-fragile) ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#FF6B00; --brand-d:#E25E00; --brand-t:#FFF3E8;
+  --bg:#F6F7FB; --card:#FFFFFF; --ink:#0F172A; --soft:#334155; --mu:#64748B; --fa:#94A3B8;
+  --line:#E6EAF2; --ok:#16A34A; --shadow:0 10px 40px rgba(15,23,42,.08);
+}
+html[data-theme="dark"]{
+  --bg:#0B0F1A; --card:#141A28; --ink:#F1F5F9; --soft:#CBD5E1; --mu:#94A3B8; --fa:#64748B;
+  --line:#22293A; --brand-t:#2A1B0E; --shadow:0 10px 40px rgba(0,0,0,.4);
+}
+body{font-family:'Satoshi',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 80px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;margin:8px 0 22px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px;letter-spacing:-.02em}
+.logo .dot{width:34px;height:34px;border-radius:9px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo span{color:var(--brand)}
+.theme{background:var(--card);border:1px solid var(--line);color:var(--ink);width:40px;height:40px;border-radius:11px;font-size:17px;cursor:pointer}
+
+/* progress */
+.steps{display:flex;gap:6px;margin-bottom:18px}
+.steps .s{flex:1;height:5px;border-radius:100px;background:var(--line);transition:background .3s}
+.steps .s.on{background:var(--brand)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow);margin-bottom:16px}
+.step-h{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.step-t{font-size:21px;font-weight:900;letter-spacing:-.02em;margin:4px 0 16px}
+
+/* chips/grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:14px 12px;cursor:pointer;font-weight:700;font-size:14px;color:var(--soft);transition:all .15s;text-align:left;font-family:inherit;display:flex;align-items:center;gap:10px}
+.chip:hover{border-color:var(--brand);color:var(--ink)}
+.chip.sel{border-color:var(--brand);background:var(--brand-t);color:var(--brand-d)}
+.chip .ic{font-size:20px}
+.chip small{display:block;color:var(--fa);font-weight:500;font-size:11.5px}
+
+/* service rows */
+.svc{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;margin-bottom:8px;transition:all .15s}
+.svc:hover{border-color:var(--brand)}
+.svc.sel{border-color:var(--brand);background:var(--brand-t)}
+.svc .chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+.svc.sel .chk{background:var(--brand);border-color:var(--brand)}
+.svc .nm{flex:1;font-weight:700;font-size:14.5px}
+.svc .nm small{display:block;color:var(--mu);font-weight:500;font-size:12px}
+.svc .pr{font-weight:900;font-size:15px}
+.svc.dis{opacity:.4;pointer-events:none}
+
+select,input{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font-family:inherit;font-size:15px;font-weight:600}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--mu);margin:12px 0 6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* summary */
+.sumrow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.sumrow:last-of-type{border-bottom:none}
+.sumrow .lab{color:var(--soft);font-weight:600}
+.sumrow .lab b{display:block;color:var(--fa);font-weight:500;font-size:11.5px}
+.sumrow .val{font-weight:800}
+.tot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:16px;border-top:2px solid var(--ink)}
+.tot .t{font-weight:900;font-size:16px}
+.tot .v{font-weight:900;font-size:30px;letter-spacing:-.03em;color:var(--brand)}
+.badge-disc{display:inline-block;background:#DCFCE7;color:var(--ok);font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:100px;margin-left:6px}
+html[data-theme="dark"] .badge-disc{background:#0F2A1A}
+.warranty{margin-top:12px;font-size:13px;color:var(--mu);font-weight:600;display:flex;align-items:center;gap:7px}
+
+/* sticky bar */
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -6px 24px rgba(15,23,42,.06);z-index:50}
+.bar .live{font-weight:900;font-size:22px;letter-spacing:-.02em}
+.bar .live small{display:block;font-size:11px;font-weight:600;color:var(--fa);letter-spacing:.04em;text-transform:uppercase}
+.btn{border:none;border-radius:13px;padding:14px 22px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;transition:all .15s}
+.btn-p{background:var(--brand);color:#fff;box-shadow:0 8px 22px rgba(255,107,0,.3)}
+.btn-p:hover{background:var(--brand-d)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.btn-g{background:transparent;color:var(--mu);border:1.5px solid var(--line)}
+.btn-g:hover{color:var(--ink)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+.hide{display:none!important}
+.quote-meta{font-size:12.5px;color:var(--fa);font-weight:600;margin-bottom:4px}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:100px;font-weight:700;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
+.toast.show{opacity:1}
+
+@media print{
+  .top,.steps,.bar,.actions,.theme,.btn,.svc.dis{display:none!important}
+  body{background:#fff;color:#000}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  .wrap{padding:0;max-width:100%}
+}
+@media(max-width:520px){.row2{grid-template-columns:1fr}.bar .live{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo"><span class="dot">R</span>Ripara<span>Subito</span></div>
+    <button class="theme" id="themeBtn" aria-label="Tema chiaro/scuro">🌙</button>
+  </div>
+
+  <div class="steps" id="progress">
+    <div class="s on"></div><div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div>
+  </div>
+
+  <!-- STEP 1 — Device -->
+  <section class="card step" data-step="1">
+    <div class="step-h">Step 1 di 5</div>
+    <div class="step-t">Che dispositivo devi riparare?</div>
+    <div class="grid" id="deviceGrid"></div>
+    <div id="deviceDetail" class="hide">
+      <div class="row2">
+        <div><label>Marca</label><select id="brand"></select></div>
+        <div><label>Modello (opzionale)</label><input id="model" placeholder="es. iPhone 14 Pro" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 — Servizi -->
+  <section class="card step hide" data-step="2">
+    <div class="step-h">Step 2 di 5</div>
+    <div class="step-t">Cosa serve? <span style="font-weight:600;color:var(--mu);font-size:14px">(puoi sceglierne più di uno)</span></div>
+    <div id="serviceList"></div>
+  </section>
+
+  <!-- STEP 3 — Urgenza + garanzia -->
+  <section class="card step hide" data-step="3">
+    <div class="step-h">Step 3 di 5</div>
+    <div class="step-t">Quanto è urgente?</div>
+    <div class="grid" id="urgencyGrid"></div>
+    <div class="warranty">🛡️ Garanzia inclusa: <b id="warrantyTxt">6 mesi</b> su tutte le riparazioni.</div>
+  </section>
+
+  <!-- STEP 4 — Riepilogo A+B+C -->
+  <section class="card step hide" data-step="4">
+    <div class="step-h">Step 4 di 5</div>
+    <div class="step-t">Il tuo preventivo</div>
+    <div class="quote-meta" id="quoteMeta"></div>
+    <div id="breakdown"></div>
+  </section>
+
+  <!-- STEP 5 — Cliente -->
+  <section class="card step hide" data-step="5">
+    <div class="step-h">Step 5 di 5</div>
+    <div class="step-t">A chi intestiamo il preventivo?</div>
+    <label>Nome e cognome</label>
+    <input id="custName" placeholder="Mario Rossi" autocomplete="name" />
+    <label>Email</label>
+    <input id="custEmail" type="email" placeholder="mario@email.it" autocomplete="email" />
+    <label>Telefono (opzionale)</label>
+    <input id="custPhone" type="tel" placeholder="+39 333 1234567" autocomplete="tel" />
+    <div class="actions">
+      <button class="btn btn-p" id="genBtn">Genera preventivo</button>
+      <button class="btn btn-g" id="printBtn">🖨️ Stampa / PDF</button>
+      <button class="btn btn-g" id="copyBtn">🔗 Copia link</button>
+      <button class="btn btn-g" id="crmBtn">➕ Invia a CRM</button>
+    </div>
+  </section>
+</div>
+
+<div class="bar">
+  <div class="live"><span id="liveTotal">€0</span><small>Totale stimato</small></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-g" id="backBtn">Indietro</button>
+    <button class="btn btn-p" id="nextBtn">Avanti →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Config prezzi (editabile) ===== */
+var CONFIG = {
+  diagnosi: 29.90,
+  servizi: {
+    schermo:  { label:'Schermo / Display', ic:'📱', Smartphone:89, Tablet:129, Laptop:159 },
+    batteria: { label:'Batteria',          ic:'🔋', Smartphone:59, Tablet:79,  Laptop:99 },
+    carica:   { label:'Connettore carica', ic:'🔌', Smartphone:49, Tablet:69,  Laptop:89 },
+    camera:   { label:'Fotocamera',        ic:'📷', Smartphone:79, Tablet:99 },
+    audio:    { label:'Audio / Speaker',   ic:'🔊', Smartphone:59, Tablet:69 },
+    software: { label:'Software / Sistema', ic:'💿', Smartphone:39, Tablet:39, Laptop:49 },
+    dati:     { label:'Recupero dati',     ic:'💾', Smartphone:89, Tablet:99, Laptop:119 }
+  },
+  urgenza: { 'Normale':1.0, 'Urgente':1.3, 'Express 24h':1.6 },
+  ricambi_quota: 0.6,   // quota del prezzo servizio attribuita ai ricambi (C); il resto è manodopera (B)
+  sconto_multi: 0.10,   // -10% se 2+ servizi
+  garanzia_mesi: 6
+};
+var DEVICES = [
+  { tipo:'Smartphone', ic:'📱', brands:['Apple','Samsung','Xiaomi','Huawei','Oppo','Google','OnePlus','Altro'] },
+  { tipo:'Tablet',     ic:'📲', brands:['Apple','Samsung','Lenovo','Huawei','Xiaomi','Altro'] },
+  { tipo:'Laptop',     ic:'💻', brands:['Apple','HP','Dell','Lenovo','Asus','Acer','Altro'] },
+  { tipo:'Console',    ic:'🎮', brands:['Sony','Microsoft','Nintendo','Altro'] },
+  { tipo:'Altro',      ic:'🔧', brands:['Altro'] }
+];
+
+/* ===== Stato ===== */
+var state = { step:1, device:null, brand:null, model:'', services:[], urgenza:'Normale' };
+function $(id){ return document.getElementById(id); }
+function eur(n){ return '€' + (Math.round(n*100)/100).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+/* ===== Render device ===== */
+function renderDevices(){
+  $('deviceGrid').innerHTML = DEVICES.map(function(d){
+    return '<button class="chip'+(state.device===d.tipo?' sel':'')+'" data-dev="'+d.tipo+'"><span class="ic">'+d.ic+'</span>'+d.tipo+'</button>';
+  }).join('');
+}
+function selectDevice(tipo){
+  state.device = tipo; state.services = [];
+  var dev = DEVICES.filter(function(d){return d.tipo===tipo;})[0];
+  $('brand').innerHTML = dev.brands.map(function(b){return '<option>'+b+'</option>';}).join('');
+  state.brand = dev.brands[0];
+  $('deviceDetail').classList.remove('hide');
+  renderDevices();
+}
+
+/* ===== Render servizi (filtrati per device) ===== */
+function renderServices(){
+  var dev = state.device || 'Smartphone';
+  var html = '';
+  Object.keys(CONFIG.servizi).forEach(function(key){
+    var s = CONFIG.servizi[key];
+    var price = s[dev];
+    var sel = state.services.indexOf(key)>-1;
+    if(price==null){
+      html += '<div class="svc dis"><div class="chk"></div><div class="nm">'+s.ic+' '+esc(s.label)+'<small>non disponibile per '+esc(dev)+'</small></div><div class="pr">—</div></div>';
+    } else {
+      html += '<div class="svc'+(sel?' sel':'')+'" data-svc="'+key+'"><div class="chk">'+(sel?'✓':'')+'</div><div class="nm">'+s.ic+' '+esc(s.label)+'</div><div class="pr">'+eur(price)+'</div></div>';
+    }
+  });
+  $('serviceList').innerHTML = html;
+}
+
+/* ===== Render urgenza ===== */
+function renderUrgency(){
+  $('urgencyGrid').innerHTML = Object.keys(CONFIG.urgenza).map(function(u){
+    var mult = CONFIG.urgenza[u];
+    var extra = mult>1 ? '<small>+'+Math.round((mult-1)*100)+'%</small>' : '<small>tempi standard</small>';
+    return '<button class="chip'+(state.urgenza===u?' sel':'')+'" data-urg="'+u+'">'+u+extra+'</button>';
+  }).join('');
+  $('warrantyTxt').textContent = CONFIG.garanzia_mesi + ' mesi';
+}
+
+/* ===== Calcolo A+B+C ===== */
+function calc(){
+  var dev = state.device || 'Smartphone';
+  var A = state.services.length ? CONFIG.diagnosi : 0;
+  var B = 0, C = 0;
+  state.services.forEach(function(key){
+    var p = CONFIG.servizi[key][dev] || 0;
+    C += p * CONFIG.ricambi_quota;
+    B += p * (1 - CONFIG.ricambi_quota);
+  });
+  var sconto = state.services.length >= 2 ? (B + C) * CONFIG.sconto_multi : 0;
+  var mult = CONFIG.urgenza[state.urgenza] || 1;
+  var repairAfter = (B + C - sconto) * mult;          // urgenza su manodopera+ricambi
+  var totale = A + repairAfter;
+  return { A:A, B:B, C:C, sconto:sconto, mult:mult, urgextra:(B+C-sconto)*(mult-1), totale:totale };
+}
+
+/* ===== Render riepilogo ===== */
+function quoteNumber(){
+  if(!state._qn){ var d=new Date(); state._qn = 'RIP-'+d.getFullYear()+'-'+String(Math.floor(d.getTime()/1000)%100000).padStart(5,'0'); }
+  return state._qn;
+}
+function renderBreakdown(){
+  var c = calc();
+  var multi = state.services.length>=2;
+  var rows = '';
+  rows += row('A · Diagnosi','Check tecnico iniziale', eur(c.A));
+  rows += row('B · Manodopera', state.services.length+' intervento/i', eur(c.B));
+  rows += row('C · Ricambi','Stima componenti', eur(c.C));
+  if(c.sconto>0) rows += row('Sconto multi-servizio','-10% su 2+ riparazioni', '−'+eur(c.sconto));
+  if(c.urgextra>0) rows += row('Supplemento '+state.urgenza,'+'+Math.round((c.mult-1)*100)+'%', '+'+eur(c.urgextra));
+  $('breakdown').innerHTML = rows +
+    '<div class="tot"><div class="t">Totale preventivo'+(multi?'<span class="badge-disc">sconto applicato</span>':'')+'</div><div class="v">'+eur(c.totale)+'</div></div>'+
+    '<div class="warranty">🛡️ Include garanzia '+CONFIG.garanzia_mesi+' mesi. Prezzo "a partire da", confermato dopo diagnosi.</div>';
+  $('quoteMeta').textContent = 'Preventivo '+quoteNumber()+' · '+new Date().toLocaleString('it-IT')+' · '+esc(state.device||'')+(state.brand?' '+esc(state.brand):'')+(state.model?' '+esc(state.model):'');
+}
+function row(lab,sub,val){ return '<div class="sumrow"><div class="lab">'+esc(lab)+'<b>'+esc(sub)+'</b></div><div class="val">'+val+'</div></div>'; }
+
+/* ===== Navigazione step ===== */
+function show(){
+  document.querySelectorAll('.step').forEach(function(el){ el.classList.toggle('hide', +el.dataset.step!==state.step); });
+  document.querySelectorAll('#progress .s').forEach(function(el,i){ el.classList.toggle('on', i < state.step); });
+  $('backBtn').style.visibility = state.step>1 ? 'visible':'hidden';
+  $('nextBtn').classList.toggle('hide', state.step===5);
+  if(state.step===2) renderServices();
+  if(state.step===3) renderUrgency();
+  if(state.step===4) renderBreakdown();
+  $('liveTotal').textContent = eur(calc().totale);
+}
+function canAdvance(){
+  if(state.step===1) return !!state.device;
+  if(state.step===2) return state.services.length>0;
+  return true;
+}
+function next(){ if(!canAdvance()){ toast(state.step===1?'Scegli un dispositivo':'Scegli almeno un servizio'); return; } if(state.step<5){ state.step++; show(); window.scrollTo({top:0,behavior:'smooth'}); } }
+function back(){ if(state.step>1){ state.step--; show(); window.scrollTo({top:0,behavior:'smooth'}); } }
+
+/* ===== Toast ===== */
+var toastT;
+function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('show');},2200); }
+
+/* ===== Link condivisibile ===== */
+function buildLink(){
+  var p = new URLSearchParams();
+  p.set('d', state.device||''); p.set('b', state.brand||''); p.set('m', state.model||'');
+  p.set('s', state.services.join(',')); p.set('u', state.urgenza);
+  return location.origin + location.pathname + '?' + p.toString();
+}
+function loadFromLink(){
+  var p = new URLSearchParams(location.search);
+  if(p.get('d')){
+    selectDevice(p.get('d'));
+    state.brand = p.get('b')||state.brand; state.model = p.get('m')||'';
+    $('model').value = state.model;
+    if(p.get('b')) $('brand').value = p.get('b');
+    state.services = (p.get('s')||'').split(',').filter(Boolean);
+    state.urgenza = p.get('u')||'Normale';
+  }
+}
+
+/* ===== Push a Twenty CRM (hook) ===== */
+function sendToCRM(){
+  var name=$('custName').value.trim(), email=$('custEmail').value.trim();
+  if(!name || !validEmail(email)){ toast('Inserisci nome ed email validi'); return; }
+  var c = calc();
+  var payload = {
+    codice_pratica: quoteNumber(),
+    cliente:{ nome:name, email:email, telefono:$('custPhone').value.trim() },
+    device:{ tipo:state.device, marca:state.brand, modello:state.model },
+    servizi: state.services, urgenza: state.urgenza,
+    preventivo_base:+c.A.toFixed(2), preventivo_manodopera:+c.B.toFixed(2),
+    preventivo_ricambi:+c.C.toFixed(2), preventivo_totale:+c.totale.toFixed(2),
+    garanzia_mesi: CONFIG.garanzia_mesi, ts:new Date().toISOString()
+  };
+  // Endpoint impostabile quando Twenty è live (crm.riparasubito.tech). Per ora: salva + notifica.
+  if(window.TWENTY_WEBHOOK){
+    fetch(window.TWENTY_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(){toast('Preventivo inviato al CRM ✓');})
+      .catch(function(){toast('CRM non raggiungibile — salvato in locale');});
+  } else {
+    try{ var q=JSON.parse(localStorage.getItem('preventivi')||'[]'); q.push(payload); localStorage.setItem('preventivi',JSON.stringify(q)); }catch(e){}
+    toast('Preventivo '+payload.codice_pratica+' salvato ✓');
+  }
+}
+function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+/* ===== Eventi ===== */
+document.addEventListener('click', function(ev){
+  var dev=ev.target.closest('[data-dev]'); if(dev){ selectDevice(dev.dataset.dev); $('liveTotal').textContent=eur(calc().totale); return; }
+  var svc=ev.target.closest('[data-svc]'); if(svc){ var k=svc.dataset.svc; var i=state.services.indexOf(k); if(i>-1)state.services.splice(i,1); else state.services.push(k); renderServices(); $('liveTotal').textContent=eur(calc().totale); return; }
+  var urg=ev.target.closest('[data-urg]'); if(urg){ state.urgenza=urg.dataset.urg; renderUrgency(); $('liveTotal').textContent=eur(calc().totale); return; }
+});
+$('brand').addEventListener('change', function(){ state.brand=this.value; });
+$('model').addEventListener('input', function(){ state.model=this.value; });
+$('nextBtn').addEventListener('click', next);
+$('backBtn').addEventListener('click', back);
+$('genBtn').addEventListener('click', function(){ if(!$('custName').value.trim()||!validEmail($('custEmail').value.trim())){ toast('Inserisci nome ed email validi'); return;} renderBreakdown(); state.step=4; show(); window.scrollTo({top:0,behavior:'smooth'}); toast('Preventivo '+quoteNumber()+' pronto'); });
+$('printBtn').addEventListener('click', function(){ renderBreakdown(); window.print(); });
+$('copyBtn').addEventListener('click', function(){ var l=buildLink(); navigator.clipboard.writeText(l).then(function(){toast('Link copiato ✓');},function(){prompt('Copia il link:',l);}); });
+$('crmBtn').addEventListener('click', sendToCRM);
+$('themeBtn').addEventListener('click', function(){ var h=document.documentElement; var dark=h.getAttribute('data-theme')==='dark'; h.setAttribute('data-theme',dark?'light':'dark'); this.textContent=dark?'🌙':'☀️'; try{localStorage.setItem('pw_theme',dark?'light':'dark');}catch(e){} });
+
+/* ===== Init ===== */
+(function init(){
+  try{ var th=localStorage.getItem('pw_theme'); if(th){ document.documentElement.setAttribute('data-theme',th); $('themeBtn').textContent=th==='dark'?'☀️':'🌙'; } }catch(e){}
+  renderDevices();
+  loadFromLink();
+  show();
+})();
+</script>
+</body>
+</html>
