@@ -1,0 +1,114 @@
+# ============================================================
+#  Twenty CRM v2.14.0 — riparasubito.tech (self-hosted, Coolify)
+#  Servizi: twenty-server, twenty-worker, twenty-db (pg16), twenty-redis
+#  Dominio: https://crm.riparasubito.tech · Storage allegati: Wasabi (S3)
+# ============================================================
+name: twenty
+
+services:
+  twenty-server:
+    image: twentyhq/twenty:v2.14.0
+    container_name: twenty-server
+    restart: unless-stopped
+    depends_on:
+      twenty-db:
+        condition: service_healthy
+      twenty-redis:
+        condition: service_healthy
+    environment:
+      NODE_PORT: 3000
+      SERVER_URL: ${SERVER_URL}
+      FRONTEND_URL: ${SERVER_URL}
+      PG_DATABASE_URL: postgres://${PG_DATABASE_USER}:${PG_DATABASE_PASSWORD}@twenty-db:5432/${PG_DATABASE_NAME}
+      REDIS_URL: redis://twenty-redis:6379
+      APP_SECRET: ${APP_SECRET}
+      STORAGE_TYPE: ${STORAGE_TYPE}
+      STORAGE_S3_REGION: ${STORAGE_S3_REGION}
+      STORAGE_S3_NAME: ${STORAGE_S3_NAME}
+      STORAGE_S3_ENDPOINT: ${STORAGE_S3_ENDPOINT}
+      STORAGE_S3_ACCESS_KEY_ID: ${STORAGE_S3_ACCESS_KEY_ID}
+      STORAGE_S3_SECRET_ACCESS_KEY: ${STORAGE_S3_SECRET_ACCESS_KEY}
+      EMAIL_DRIVER: ${EMAIL_DRIVER}
+      EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME}
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
+      MESSAGING_PROVIDER_GMAIL_ENABLED: ${MESSAGING_PROVIDER_GMAIL_ENABLED:-false}
+    volumes:
+      - twenty_server-local-data:/app/packages/twenty-server/.local-storage
+    networks: [twenty-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  twenty-worker:
+    image: twentyhq/twenty:v2.14.0
+    container_name: twenty-worker
+    restart: unless-stopped
+    command: ["yarn", "worker:prod"]
+    depends_on:
+      twenty-db:
+        condition: service_healthy
+      twenty-redis:
+        condition: service_healthy
+      twenty-server:
+        condition: service_started
+    environment:
+      PG_DATABASE_URL: postgres://${PG_DATABASE_USER}:${PG_DATABASE_PASSWORD}@twenty-db:5432/${PG_DATABASE_NAME}
+      REDIS_URL: redis://twenty-redis:6379
+      SERVER_URL: ${SERVER_URL}
+      APP_SECRET: ${APP_SECRET}
+      STORAGE_TYPE: ${STORAGE_TYPE}
+      STORAGE_S3_REGION: ${STORAGE_S3_REGION}
+      STORAGE_S3_NAME: ${STORAGE_S3_NAME}
+      STORAGE_S3_ENDPOINT: ${STORAGE_S3_ENDPOINT}
+      STORAGE_S3_ACCESS_KEY_ID: ${STORAGE_S3_ACCESS_KEY_ID}
+      STORAGE_S3_SECRET_ACCESS_KEY: ${STORAGE_S3_SECRET_ACCESS_KEY}
+      EMAIL_DRIVER: ${EMAIL_DRIVER}
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
+    networks: [twenty-net]
+
+  twenty-db:
+    image: postgres:16-alpine
+    container_name: twenty-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PG_DATABASE_USER}
+      POSTGRES_PASSWORD: ${PG_DATABASE_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE_NAME}
+    volumes:
+      - twenty_db-data:/var/lib/postgresql/data
+    networks: [twenty-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_DATABASE_USER} -d ${PG_DATABASE_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  twenty-redis:
+    image: redis:7-alpine
+    container_name: twenty-redis
+    restart: unless-stopped
+    command: ["redis-server", "--maxmemory-policy", "noeviction"]
+    networks: [twenty-net]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  twenty_db-data:
+  twenty_server-local-data:
+
+networks:
+  twenty-net:
+    driver: bridge

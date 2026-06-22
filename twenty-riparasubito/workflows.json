@@ -1,0 +1,64 @@
+{
+  "$comment": "Workflow nativi Twenty CRM v2.14.0 per riparasubito.tech. Da ricreare nell'UI Settings > Workflows o via API. Email = mail connector configurato (info@riparasubito.tech).",
+  "workflows": [
+    {
+      "name": "WF1 — Notifica cliente su cambio stato",
+      "trigger": { "type": "RECORD_UPDATED", "object": "riparazione", "watchFields": ["stato"] },
+      "filter": "record.stato != previous.stato",
+      "actions": [
+        {
+          "type": "SEND_EMAIL",
+          "to": "{{record.cliente.emails.primaryEmail}}",
+          "subject": "Aggiornamento riparazione {{record.codicePratica}} — {{record.stato}}",
+          "body": "Ciao {{record.cliente.name.firstName}},\nla tua riparazione {{record.codicePratica}} ({{record.deviceMarca}} {{record.deviceModello}}) è ora nello stato: {{record.stato}}.\n\nTi terremo aggiornato. — RiparaSubito"
+        }
+      ]
+    },
+    {
+      "name": "WF2 — Invio preventivo",
+      "trigger": { "type": "RECORD_UPDATED", "object": "riparazione", "watchFields": ["stato"] },
+      "filter": "record.stato == 'Preventivo Inviato'",
+      "actions": [
+        {
+          "type": "SEND_EMAIL",
+          "to": "{{record.cliente.emails.primaryEmail}}",
+          "subject": "Il tuo preventivo {{record.codicePratica}} — RiparaSubito",
+          "body": "Ciao {{record.cliente.name.firstName}},\necco il preventivo per {{record.deviceMarca}} {{record.deviceModello}}:\n\n• Diagnosi: € {{record.preventivoBase}}\n• Manodopera: € {{record.preventivoManodopera}}\n• Ricambi: € {{record.preventivoRicambi}}\n──────────────\nTOTALE: € {{record.preventivoTotale}}\n\nGaranzia 6 mesi. Rispondi a questa email per approvare. — RiparaSubito"
+        }
+      ]
+    },
+    {
+      "name": "WF3 — Reminder consegna",
+      "trigger": { "type": "CRON", "schedule": "0 9 * * *", "timezone": "Europe/Rome" },
+      "filter": "record.dataConsegnaStimata == TODAY && record.stato != 'Consegnato'",
+      "object": "riparazione",
+      "actions": [
+        {
+          "type": "SEND_EMAIL",
+          "to": "{{record.cliente.emails.primaryEmail}}",
+          "subject": "La tua riparazione {{record.codicePratica}} è in consegna oggi",
+          "body": "Ciao {{record.cliente.name.firstName}}, oggi è prevista la consegna del tuo {{record.deviceModello}}. Ti aspettiamo! — RiparaSubito"
+        },
+        {
+          "type": "NOTIFY_MEMBER",
+          "to": "{{record.tecnicoAssegnato}}",
+          "message": "Consegna oggi: {{record.codicePratica}} ({{record.deviceModello}}) — stato {{record.stato}}"
+        }
+      ]
+    },
+    {
+      "name": "WF4 — Auto-capture da email",
+      "trigger": { "type": "INCOMING_EMAIL", "mailbox": "info@riparasubito.tech", "keywords": ["riparazione", "preventivo", "device", "rotto", "schermo"] },
+      "actions": [
+        { "type": "UPSERT_PERSON", "matchBy": "email", "from": "{{email.from}}", "tags": ["Lead Riparazione"] },
+        { "type": "CREATE_RECORD", "object": "riparazione", "fields": {
+            "stato": "Ricevuto",
+            "problemaDescrizione": "{{email.body}}",
+            "cliente": "{{person.id}}",
+            "codicePratica": "RIP-{{year}}-{{seq}}"
+        }},
+        { "type": "CREATE_NOTE", "on": "person", "body": "Email entrante: {{email.subject}}\n\n{{email.body}}" }
+      ]
+    }
+  ]
+}
