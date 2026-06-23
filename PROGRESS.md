@@ -98,3 +98,23 @@ npm run build           # → dist/ statici su Shopify CDN
 # middleware
 pm2 restart rs-custom-app   # porta 3213
 ```
+
+---
+
+## DECISIONE ARCHITETTURALE DEFINITIVA — 23 giu 2026 (verificata sul VPS)
+
+**Problema vero:** non e lo stack, e la proliferazione di copie dello stesso prodotto
+(Base44 + gestionale bespoke :3213 + monorepo Next + Twenty + Astro). Ogni doc nuovo ne aggiunge una.
+
+**Stato reale (verificato):**
+- :3213 LIVE (repair360-core stabile + rs-custom-app in crash-loop, da sistemare). Dati reali.
+- NESSUN Next.js gira sul VPS -> "monorepo gia in produzione" e aspirazionale (repo, non deploy).
+- Monorepo Waipro-Hub/riparasubito NON e boilerplate vuoto: pagine vere (dashboard repairs/customers/fatture/calendar/coda/partner/analytics/agents, marketing prezzi/ricondizionati/migrazione, onboarding, admin). 57 tsx, commit 17/06.
+- Design canonico (look + dinamiche) = questo repo (screens-*.jsx), sync via design-sync.
+
+**Decisione (LOCKED):**
+1. Front UNICO = monorepo Next.js Waipro-Hub/riparasubito. UI dalle dinamiche di repair360-design (screens-*.jsx), NON da Base44.
+2. :3213 resta DIETRO come backend dati/operativo (o migrazione Neon al kickoff).
+3. Twenty headless = ABBANDONATO. Astro = ABBANDONATO. Base44 = purgare progressivamente.
+4. Bespoke :3213 = prototipo: innestare le parti migliori (Quick Entry 8-step, lookup SIFAR, profili tenant, sblocco pattern) nel monorepo, non tenerlo come 3a copia.
+5. Gap board produzione.html = mantenuto a mano (NON Base44): da verificare contro stato reale.
