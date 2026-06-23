@@ -1,0 +1,63 @@
+/* ============================================================
+   WAIPRO · Repair360 — Design System multi-tenant (fondazione)
+   Un solo sistema, riusabile per ogni account/tenant.
+   Cambia brand con  <html data-brand="riparasubito|mrphone|tec">
+   I design ricevono questo file: tutti i token vivono qui.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+:root{
+  /* --- Tipografia (comune a tutti i brand) --- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --text-xs:.75rem; --text-sm:.875rem; --text-base:1rem; --text-lg:1.125rem;
+  --text-xl:1.375rem; --text-2xl:1.75rem; --text-3xl:2.25rem; --text-4xl:3rem;
+  --font-regular:400; --font-medium:500; --font-semibold:600; --font-bold:700; --font-black:900;
+
+  /* --- Spaziatura / raggio / ombre (comune) --- */
+  --space-1:.25rem; --space-2:.5rem; --space-3:.75rem; --space-4:1rem;
+  --space-6:1.5rem; --space-8:2rem; --space-12:3rem;
+  --radius-sm:.5rem; --radius-md:1rem; --radius-lg:1.5rem; --radius-xl:2rem; --radius-full:999px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.06); --shadow-md:0 4px 16px rgba(0,0,0,.08); --shadow-lg:0 12px 32px rgba(0,0,0,.12);
+
+  /* --- Neutri (comune) --- */
+  --white:#ffffff; --ink:#1a1a1a; --muted:#6b7280; --line:#e5e7eb; --bg-app:#ffffff;
+
+  /* --- Stato --- */
+  --ok:#16a34a; --warn:#f59e0b; --bad:#dc2626; --info:#2563eb;
+
+  /* --- DEFAULT brand = RiparaSubito --- */
+  --brand:#FF6B00; --brand-ink:#ffffff; --brand-soft:#fff7ed; --brand-strong:#e25e00;
+  --surface:#ffffff; --surface-2:#fff7ed; --card-radius:var(--radius-xl);
+}
+
+/* === RiparaSubito (arancio, stile Vodafone: bottoni grandi e netti) === */
+[data-brand="riparasubito"]{
+  --brand:#FF6B00; --brand-ink:#ffffff; --brand-soft:#fff7ed; --brand-strong:#e25e00;
+  --surface:#ffffff; --surface-2:#fff7ed; --card-radius:var(--radius-xl);
+}
+
+/* === MrPhone (rosso) — schermate APP/gestionale SEMPRE tema CHIARO === */
+[data-brand="mrphone"]{
+  --brand:#DC2626; --brand-ink:#ffffff; --brand-soft:#fef2f2; --brand-strong:#b91c1c;
+  --surface:#ffffff; --surface-2:#fef2f2; --card-radius:var(--radius-lg);
+  --bg-app:#ffffff; /* app = chiaro obbligatorio. Il SITO mrphone.tech è scuro a parte. */
+}
+
+/* === TEC Perugia (multiservizi) — accent blu professionale (da confermare col tema tec) === */
+[data-brand="tec"]{
+  --brand:#0F4C81; --brand-ink:#ffffff; --brand-soft:#eef4fb; --brand-strong:#0c3c66;
+  --surface:#ffffff; --surface-2:#eef4fb; --card-radius:var(--radius-lg);
+}
+
+/* ---- Primitive minime on-brand (i design possono comporci sopra) ---- */
+*{box-sizing:border-box}
+body{font-family:var(--font-sans);color:var(--ink);background:var(--bg-app);margin:0}
+.rd-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  font-family:var(--font-sans);font-weight:var(--font-bold);font-size:var(--text-lg);
+  padding:1rem 1.75rem;border-radius:var(--radius-full);border:0;cursor:pointer;
+  background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow-md);min-height:56px}
+.rd-btn--ghost{background:transparent;color:var(--brand);border:2px solid var(--brand);box-shadow:none}
+.rd-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--card-radius);
+  padding:var(--space-6);box-shadow:var(--shadow-md)}
+.rd-pill{display:inline-block;font-size:var(--text-sm);font-weight:var(--font-semibold);
+  padding:.25rem .75rem;border-radius:var(--radius-full);background:var(--brand-soft);color:var(--brand-strong)}
